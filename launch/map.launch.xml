@@ -1,0 +1,23 @@
+<launch>
+
+<!-- Run map launch, rviz-->
+<set_parameter name="use_sim_time" value="true"/>
+
+
+<!-- map args -->
+<!-- <arg name="map_path" default="$(env HOME)/autoware_map/autoware_dev_kashiwanoha" /> -->
+<arg name="map_path" default="$(env HOME)/autoware_map/odaiba" />
+<arg name="pointcloud_map_file" default="pointcloud_map.pcd" description="lcd map path"/>
+<arg name="lanelet2_map_file" default="lanelet2_map.osm" description="vector map path"/>
+
+<!-- rviz args -->
+<arg name="rviz_config_path" default="$(env HOME)/debug_radar_tracker.rviz"/>
+
+
+<!-- launch map -->
+<include file="$(find-pkg-share autoware_launch)/launch/components/tier4_map_component.launch.xml"/>
+
+<!--launch rviz-->
+<node pkg="rviz2" exec="rviz2" name="rviz2" args="-d $(var rviz_config_path)"/>
+
+</launch>

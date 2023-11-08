@@ -1,0 +1,59 @@
+<launch>
+
+<!-- Run map launch, rviz-->
+<set_parameter name="use_sim_time" value="true"/>
+
+
+<!-- map args -->
+<!-- <arg name="map_path" default="$(env HOME)/autoware_map/autoware_dev_kashiwanoha" /> -->
+<arg name="map_path" default="$(env HOME)/autoware_map/odaiba" />
+<arg name="rviz_config_path" default="$(env HOME)/debug_radar_tracker.rviz"/>
+<!-- args -->
+<arg name="publish_rate" default="10.0"/>
+<arg name="enable_delay_compensation" default="true"/>
+<arg name="run_prediction" default="false"/>
+<arg name="radar_tracker_input" default="/perception/object_recognition/radar/far_objects"/>
+<arg name="radar_tracker_output" default="/perception/object_recognition/tracking/far_objects"/>
+
+
+
+<!-- launch -->
+<include file="$(find-pkg-share debug_launcher)/launch/map.launch.xml">
+    <arg name="map_path" value="$(var map_path)"/>
+    <arg name="rviz_config_path" value="$(var rviz_config_path)"/>
+</include>
+
+
+<!-- tracking -->
+<!--multi object tracking for near objects-->
+<group>
+<include file="$(find-pkg-share multi_object_tracker)/launch/multi_object_tracker.launch.xml">
+    <!-- <arg name="data_association_matrix_path" value="$(var object_recognition_tracking_multi_object_tracker_data_association_matrix_param_path)"/> -->
+    <arg name="publish_rate" value="$(var publish_rate)"/>
+    <arg name="enable_delay_compensation" value="$(var enable_delay_compensation)"/>
+    <arg name="output" value="/perception/object_recognition/tracking/near_objects"/>
+</include>
+
+<!--radar long range dynamic object tracking-->
+<include file="$(find-pkg-share radar_object_tracker)/launch/radar_object_tracker.launch.xml">
+    <arg name="publish_rate" value="$(var publish_rate)"/>
+    <arg name="enable_delay_compensation" value="$(var enable_delay_compensation)"/>
+    <arg name="input" value="$(var radar_tracker_input)"/>
+    <arg name="output" value="$(var radar_tracker_output)"/>
+    <!-- <arg name="data_association_matrix_path" value="$(var object_recognition_tracking_radar_object_tracker_data_association_matrix_param_path)"/>
+    <arg name="tracker_setting_path" value="$(var object_recognition_tracking_radar_object_tracker_tracking_setting_param_path)"/> -->
+</include>
+</group>
+
+<!-- prediction -->
+<group if="$(var run_prediction)">
+<let name="input/objects" value="/perception/object_recognition/tracking/near_objects"/>
+<let name="output/objects" value="/perception/object_recognition/prediction/objects"/>
+<include file="$(find-pkg-share map_based_prediction)/launch/map_based_prediction.launch.xml">
+    <arg name="output_topic" value="$(var output/objects)"/>
+    <arg name="input_topic" value="$(var input/objects)"/>
+    <arg name="param_path" value="$(var object_recognition_prediction_map_based_prediction_param_path)"/>
+</include>
+</group>
+
+</launch>
