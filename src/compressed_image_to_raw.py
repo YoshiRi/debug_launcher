@@ -42,6 +42,7 @@ class ImageRepublisher(Node):
             cv_image = self.bridge.compressed_imgmsg_to_cv2(msg)
             # OpenCV形式の画像を生のROSメッセージに変換
             raw_msg = self.bridge.cv2_to_imgmsg(cv_image, "bgr8")
+            raw_msg.header = msg.header
             # 生の画像メッセージをパブリッシュ
             publisher.publish(raw_msg)
         except CvBridgeError as e:
@@ -51,9 +52,9 @@ def main(args=None):
     rclpy.init(args=args)
     
     # ここに入力トピックと出力トピックのリストを指定します
-    input_topics = ['/sensing/camera/camera0/image_rect_color/compressed', '/sensing/camera/camera1/image_rect_color/compressed', '/sensing/camera/camera2/image_rect_color/compressed', '/sensing/camera/camera3/image_rect_color/compressed'
+    input_topics = ['/sensing/camera/camera0/image_rect_color/compressed', '/sensing/camera/camera1/image_rect_color/compressed', '/sensing/camera/camera2/image_rect_color/compressed', '/sensing/camera/camera3/image_rect_color/compressed',
                     '/sensing/camera/camera4/image_rect_color/compressed', '/sensing/camera/camera5/image_rect_color/compressed']
-    output_topics = ['/sensing/camera/camera0/image_rect_color', '/sensing/camera/camera1/image_rect_color', '/sensing/camera/camera2/image_rect_color', '/sensing/camera/camera3/image_rect_color'
+    output_topics = ['/sensing/camera/camera0/image_rect_color', '/sensing/camera/camera1/image_rect_color', '/sensing/camera/camera2/image_rect_color', '/sensing/camera/camera3/image_rect_color',
                     '/sensing/camera/camera4/image_rect_color', '/sensing/camera/camera5/image_rect_color']
 
     image_republisher = ImageRepublisher(input_topics, output_topics)
