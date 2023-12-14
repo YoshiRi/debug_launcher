@@ -8,9 +8,9 @@
 <!-- <arg name="map_path" default="$(env HOME)/autoware_map/autoware_dev_kashiwanoha" /> -->
 <arg name="map_path" default="$(env HOME)/autoware_map/odaiba" />
 <arg name="rviz_config_path" default="$(env HOME)/debug_radar_tracker.rviz"/>
+<!-- <arg name="rviz_config_path" default="$(find-pkg-share debug_launcher)/rviz/debug.rviz"/> -->
 <!-- args -->
 <arg name="publish_rate" default="10.0"/>
-<arg name="enable_delay_compensation" default="true"/>
 <arg name="run_prediction" default="false"/>
 <arg name="radar_tracker_input" default="/perception/object_recognition/radar/far_objects"/>
 <arg name="radar_tracker_output" default="/perception/object_recognition/tracking/far_objects"/>
@@ -27,11 +27,12 @@
 <!-- tracking -->
 <!--multi object tracking for near objects-->
 <group>
+<push-ros-namespace namespace="/perception/object_recognition/tracking"/>
+
 <include file="$(find-pkg-share multi_object_tracker)/launch/multi_object_tracker.launch.xml">
-    <!-- <arg name="data_association_matrix_path" value="$(var object_recognition_tracking_multi_object_tracker_data_association_matrix_param_path)"/> -->
-    <arg name="publish_rate" value="$(var publish_rate)"/>
-    <arg name="enable_delay_compensation" value="$(var enable_delay_compensation)"/>
     <arg name="output" value="/perception/object_recognition/tracking/near_objects"/>
+    <arg name="tracker_setting_path" value="$(find-pkg-share multi_object_tracker)/config/multi_object_tracker_node.param.yaml"/>
+    <arg name="data_association_matrix_path" value="$(find-pkg-share multi_object_tracker)/config/data_association_matrix.param.yaml"/>
 </include>
 
 <!--radar long range dynamic object tracking-->
@@ -40,10 +41,19 @@
     <arg name="enable_delay_compensation" value="$(var enable_delay_compensation)"/>
     <arg name="input" value="$(var radar_tracker_input)"/>
     <arg name="output" value="$(var radar_tracker_output)"/>
-    <!-- <arg name="data_association_matrix_path" value="$(var object_recognition_tracking_radar_object_tracker_data_association_matrix_param_path)"/>
-    <arg name="tracker_setting_path" value="$(var object_recognition_tracking_radar_object_tracker_tracking_setting_param_path)"/> -->
 </include>
+
+<!--tracking object merger to merge near objects and far objects -->
+<include file="$(find-pkg-share tracking_object_merger)/launch/decorative_tracker_merger.launch.xml">
+    <arg name="input/main_object" value="/perception/object_recognition/tracking/near_objects"/>
+    <arg name="input/sub_object" value="$(var radar_tracker_output)"/>
+    <arg name="output" value="/perception/object_recognition/tracking/objects"/>
+    <arg name="data_association_matrix_path" value="$(find-pkg-share tracking_object_merger)/config/data_association_matrix.param.yaml"/>
+    <arg name="merge_options_path" value="$(find-pkg-share tracking_object_merger)/config/decorative_tracker_merger_policy.param.yaml"/>
+</include>
+
 </group>
+
 
 <!-- prediction -->
 <group if="$(var run_prediction)">
