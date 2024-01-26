@@ -6,7 +6,8 @@
 
 <!-- map args -->
 <!-- <arg name="map_path" default="$(env HOME)/autoware_map/autoware_dev_kashiwanoha" /> -->
-<arg name="map_path" default="$(env HOME)/autoware_map/odaiba" />
+<arg name="map_name" default="odaiba" />
+<arg name="map_path" default="$(env HOME)/autoware_map/$(var map_name)"/>
 <arg name="rviz_config_path" default="$(env HOME)/debug_radar_tracker.rviz"/>
 <!-- <arg name="rviz_config_path" default="$(find-pkg-share debug_launcher)/rviz/debug.rviz"/> -->
 <!-- args -->
@@ -14,7 +15,6 @@
 <arg name="run_prediction" default="false"/>
 <arg name="radar_tracker_input" default="/perception/object_recognition/radar/far_objects"/>
 <arg name="radar_tracker_output" default="/perception/object_recognition/tracking/far_objects"/>
-
 
 
 <!-- launch -->
@@ -57,7 +57,7 @@
 
 <!-- prediction -->
 <group if="$(var run_prediction)">
-<let name="input/objects" value="/perception/object_recognition/tracking/near_objects"/>
+<let name="input/objects" value="/perception/object_recognition/tracking/objects"/>
 <let name="output/objects" value="/perception/object_recognition/prediction/objects"/>
 <include file="$(find-pkg-share map_based_prediction)/launch/map_based_prediction.launch.xml">
     <arg name="output_topic" value="$(var output/objects)"/>
