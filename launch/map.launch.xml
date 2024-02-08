@@ -6,7 +6,8 @@
 
 <!-- map args -->
 <!-- <arg name="map_path" default="$(env HOME)/autoware_map/autoware_dev_kashiwanoha" /> -->
-<arg name="map_path" default="$(env HOME)/autoware_map/odaiba" />
+<arg name="map_name" default="odaiba" />
+<arg name="map_path" default="$(env HOME)/autoware_map/$(var map_name)"/>
 <arg name="pointcloud_map_file" default="pointcloud_map.pcd" description="lcd map path"/>
 <arg name="lanelet2_map_file" default="lanelet2_map.osm" description="vector map path"/>
 

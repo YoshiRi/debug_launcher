@@ -15,6 +15,7 @@
 <arg name="run_prediction" default="false"/>
 <arg name="radar_tracker_input" default="/perception/object_recognition/radar/far_objects"/>
 <arg name="radar_tracker_output" default="/perception/object_recognition/tracking/far_objects"/>
+<arg name="enable_delay_compensation" default="false"/>
 
 
 <!-- launch -->
