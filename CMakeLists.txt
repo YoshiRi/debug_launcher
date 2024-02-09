@@ -30,3 +30,14 @@ ament_auto_package(
   launch
   config
 )
+
+# install scripts
+file(GLOB SCRIPTS_FILES
+  RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}/scripts"
+  "${CMAKE_CURRENT_SOURCE_DIR}/scripts/*.sh")
+foreach(SCRIPTS_FILE ${SCRIPTS_FILES})
+  message(STATUS "Installing script: ${SCRIPTS_FILE}")
+  install(PROGRAMS scripts/${SCRIPTS_FILE}
+    DESTINATION lib/${PROJECT_NAME}
+  )
+endforeach()
