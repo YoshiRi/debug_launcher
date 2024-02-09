@@ -5,6 +5,7 @@
 
 BAG_NAME=$1
 OFFSET=${2:-0.001}
+AUTOWARE_PATH=$HOME/autoware
 
 # topics not to be renamed
 SKIP_TOPICS=(
@@ -33,4 +34,14 @@ for topic in ${PERCEPTION_TOPIC[@]}; do
     COMMAND_OPTION+=" $topic:=$RENAMED_TARGET_PERCEPTION_TOPIC"
 done
 
+# command
+# 1. run rosbag in another tab so that tf_static if offset is above 1s
+# open new bash 
+# source $AUTOWARE_PATH/install/setup.bash
+# play only tf_static and kill
+if [[ $(echo "$OFFSET > 5" | bc) -eq 1 ]]; then
+    (ros2 bag play "$BAG_NAME" --topics /tf_static)
+fi
+
+# 2. main command
 ros2 bag play "$BAG_NAME" $COMMAND_OPTION -r 0.2 --clock 200 -s sqlite3 --start-offset $OFFSET
