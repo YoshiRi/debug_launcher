@@ -11,6 +11,7 @@ AUTOWARE_PATH=$HOME/autoware
 SKIP_TOPICS=(
      "/sensing/radar/*" # keep this if you want radar objects to be remained
      "/perception/object_recognition/detection/rois*"
+    #  "/sensing/lidar/*/pandar_packets"
 )
 
 PERCEPTION_TOPIC=$(ros2 bag info "$BAG_NAME" | awk '{print $2}' | grep -e centerpoint -e objects -e prediction/ -e objects_raw)
@@ -40,7 +41,7 @@ done
 # source $AUTOWARE_PATH/install/setup.bash
 # play only tf_static and kill
 if [[ $(echo "$OFFSET > 5" | bc) -eq 1 ]]; then
-    (ros2 bag play "$BAG_NAME" --topics /tf_static)
+    (ros2 bag play "$BAG_NAME" --topics /tf_static --clock)
 fi
 
 # 2. main command
