@@ -52,6 +52,9 @@ ros2 launch debug_launcher rerun_tracking_and_prediction.launch.xml map_name:=<y
 | arg | description |
 | --- | --- |
 | map_name | name of map file. If you set this, the launcher will look for `$(env HOME)/autoware_map/$(var map_name)`.|
+| use_tracking_merger | if true, use tracking merger. Enable this option when you want to check with radar config. |
+| use_universe_path | if true, use universe path for config for tracking/prediction. It makes easier for you to check your change quickly. If false, nodes use parameters in autoware_launch. |
+
 
 When play rosbag, you need to remap existing tracking/prediction topics related to this launcher.
 
@@ -65,6 +68,7 @@ ros2 run debug_launcher play_bag_before_tracking.sh -b <rosbag> -o <offset>
 ### `play_bag_without_perception.sh`
 
 This script plays rosbag witt perception topics remapped.
+In the default, most perception topics and pointcloud topics are remapped to `/tmp/<original topic name>` namespace.
 
 Usage:
 ```bash
