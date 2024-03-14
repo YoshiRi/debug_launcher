@@ -17,7 +17,17 @@
 <arg name="enable_delay_compensation" default="false"/>
 <arg name="run_prediction" default="true"/>
 <arg name="use_tracking_merger" default="false"/>
-<arg name="object_recognition_prediction_map_based_prediction_param_path" default="$(find-pkg-share map_based_prediction)/config/map_based_prediction.param.yaml"/>
+
+<!-- config path control-->
+<arg name="use_universe_path" default="true"/>
+<arg name="map_based_prediction_config_path" default="$(find-pkg-share map_based_prediction)/config/" if="$(var use_universe_path)"/>
+<arg name="multi_object_tracker_config_path" default="$(find-pkg-share multi_object_tracker)/config" if="$(var use_universe_path)"/>
+<arg name="tracking_object_merger_config_path" default="$(find-pkg-share tracking_object_merger)/config" if="$(var use_universe_path)"/>
+<arg name="radar_object_tracker_config_path" default="$(find-pkg-share radar_object_tracker)/config" if="$(var use_universe_path)"/>
+<arg name="map_based_prediction_config_path" default="$(find-pkg-share autoware_launch)/config/perception/object_recognition/prediction" unless="$(var use_universe_path)"/>
+<arg name="multi_object_tracker_config_path" default="$(find-pkg-share autoware_launch)/config/perception/object_recognition/tracking/multi_object_tracker" unless="$(var use_universe_path)"/>
+<arg name="tracking_object_merger_config_path" default="$(find-pkg-share autoware_launch)/config/perception/object_recognition/tracking/tracking_object_merger" unless="$(var use_universe_path)"/>
+<arg name="radar_object_tracker_config_path" default="$(find-pkg-share autoware_launch)/config/perception/object_recognition/tracking/radar_object_tracker" unless="$(var use_universe_path)"/>
 
 
 <!-- launch -->
@@ -34,8 +44,8 @@
 
 <include file="$(find-pkg-share multi_object_tracker)/launch/multi_object_tracker.launch.xml">
     <arg name="output" value="/perception/object_recognition/tracking/near_objects"/>
-    <arg name="tracker_setting_path" value="$(find-pkg-share multi_object_tracker)/config/multi_object_tracker_node.param.yaml"/>
-    <arg name="data_association_matrix_path" value="$(find-pkg-share multi_object_tracker)/config/data_association_matrix.param.yaml"/>
+    <arg name="tracker_setting_path" value="$(var multi_object_tracker_config_path)/multi_object_tracker_node.param.yaml"/>
+    <arg name="data_association_matrix_path" value="$(var multi_object_tracker_config_path)/data_association_matrix.param.yaml"/>
 </include>
 
 <!--radar long range dynamic object tracking-->
@@ -44,6 +54,8 @@
     <arg name="enable_delay_compensation" value="$(var enable_delay_compensation)"/>
     <arg name="input" value="$(var radar_tracker_input)"/>
     <arg name="output" value="$(var radar_tracker_output)"/>
+    <arg name="data_association_matrix_path" value="$(var radar_object_tracker_config_path)/data_association_matrix.param.yaml"/>
+    <arg name="radar_object_tracker_param_path" value="$(var radar_object_tracker_config_path)/radar_object_tracker.param.yaml"/>
 </include>
 
 <!--tracking object merger to merge near objects and far objects -->
@@ -52,8 +64,8 @@
         <arg name="input/main_object" value="/perception/object_recognition/tracking/near_objects"/>
         <arg name="input/sub_object" value="$(var radar_tracker_output)"/>
         <arg name="output" value="/perception/object_recognition/tracking/objects"/>
-        <arg name="data_association_matrix_path" value="$(find-pkg-share tracking_object_merger)/config/data_association_matrix.param.yaml"/>
-        <arg name="merge_options_path" value="$(find-pkg-share tracking_object_merger)/config/decorative_tracker_merger_policy.param.yaml"/>
+        <arg name="data_association_matrix_path" value="$(var tracking_object_merger_config_path)/data_association_matrix.param.yaml"/>
+        <arg name="merge_options_path" value="$(var tracking_object_merger_config_path)/decorative_tracker_merger_policy.param.yaml"/>
     </include>
 </group>
 
@@ -68,7 +80,7 @@
 <include file="$(find-pkg-share map_based_prediction)/launch/map_based_prediction.launch.xml">
     <arg name="output_topic" value="$(var output/objects)"/>
     <arg name="input_topic" value="$(var input/objects)"/>
-    <arg name="param_path" value="$(var object_recognition_prediction_map_based_prediction_param_path)"/>
+    <arg name="param_path" value="$(var map_based_prediction_config_path)/map_based_prediction.param.yaml"/>
 </include>
 </group>
 
