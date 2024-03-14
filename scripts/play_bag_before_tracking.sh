@@ -1,19 +1,23 @@
 #!/bin/bash
 
 # remap perception related topics to /tmp/*
-# usage: ./play_bag_before_tracking.sh -b <bag_name> -o <start offset> --remap-radar --remap-detection
+# usage: ./play_bag_before_tracking.sh -b <bag_name> -o <start offset> -r <rate> --remap-radar --remap-detection
 
 REMAP_RADAR=0
 REMAP_DETECTION=0
 OFFSET=0.001
+RATE=0.2
 
-while getopts "b:o:-:" opt; do
+while getopts "b:o:r:-:" opt; do
   case $opt in
     b)
       BAG_NAME=$OPTARG
       ;;
     o)
       OFFSET=$OPTARG
+      ;;
+    r)
+      RATE=$OPTARG
       ;;
     -)
       case $OPTARG in
@@ -66,4 +70,4 @@ for topic in ${PERCEPTION_REMAP_TOPICS[@]}; do
     COMMAND_OPTION+=" $topic:=$RENAMED_PERCEPTION_REMAP_TOPICS"
 done
 
-ros2 bag play "$BAG_NAME" $COMMAND_OPTION -r 0.2 --clock 200 -s sqlite3 --start-offset $OFFSET
+ros2 bag play "$BAG_NAME" $COMMAND_OPTION -r $RATE --clock 200 -s sqlite3 --start-offset $OFFSET
