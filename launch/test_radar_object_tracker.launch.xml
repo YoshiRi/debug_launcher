@@ -5,7 +5,7 @@
 
 <!-- map args -->
 <arg name="map_name" default="odaiba" />
-<arg name="rviz_config_path" default="$(env HOME)/radar_xx1_replay.rviz"/>
+<arg name="rviz_config_path" default="$(find-pkg-share debug_launcher)/rviz/radar_debug.rviz"/>
 
 <!-- launch map -->
 <include file="$(find-pkg-share debug_launcher)/launch/map.launch.xml">
