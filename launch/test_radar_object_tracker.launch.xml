@@ -1,50 +1,63 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <launch>
-<!-- Run map launch, rviz, and radar_object_tracker_launch-->
+<!-- Run map launch, rviz-->
 <set_parameter name="use_sim_time" value="true"/>
 
-<arg name="use_map" default="true" description="use map"/>
-<!-- <arg name="map_path" default="$(env HOME)/autoware_map/autoware_dev_kashiwanoha" /> -->
-<arg name="map_path" default="$(env HOME)/autoware_map/odaiba" />
-<arg name="pointcloud_map_file" default="pointcloud_map.pcd" description="lcd map path"/>
-<arg name="lanelet2_map_file" default="lanelet2_map.osm" description="vector map path"/>
-<!-- <arg name="run_radar_detection" default="true" description="run radar detection"/> -->
-<arg name="run_radar_detection" default="true" description="run radar detection"/>
-<let name="radar_detection" value="/perception/object_recognition/detection/radar/retry/far_objects"/>
-<arg name="radar_object_clustering_param_path" default="$(find-pkg-share radar_object_clustering)/config/radar_object_clustering.param.yaml"/>
+<!-- map args -->
+<arg name="map_name" default="odaiba" />
+<arg name="rviz_config_path" default="$(env HOME)/radar_xx1_replay.rviz"/>
+
+<!-- launch map -->
+<include file="$(find-pkg-share debug_launcher)/launch/map.launch.xml">
+  <arg name="map_name" value="$(var map_name)"/>
+  <arg name="rviz_config_path" value="$(var rviz_config_path)"/>
+  <arg name="launch_vehicle" value="true"/>
+</include>
 
 
-<group if="$(var use_map)">
-    <include file="$(find-pkg-share autoware_launch)/launch/components/tier4_map_component.launch.xml"/>
+<!-- launch radar drivers -->
+<group>
+ <push-ros-namespace namespace="sensing"/>
+  <include file="$(find-pkg-share aip_xx1_launch)/launch/radar.launch.xml">
+    <arg name="launch_driver" value="false"/>
+  </include>
 </group>
+
+<!-- launch radar detections -->
+<arg name="run_radar_detection" default="true" description="run radar detection"/>
+<let name="radar_detection" value="/perception/object_recognition/detection/radar/far_objects"/>
+<arg name="radar_object_clustering_param_path" default="$(find-pkg-share radar_object_clustering)/config/radar_object_clustering.param.yaml"/>
+<arg name="radar_lanelet_filtering_range_param" default="$(find-pkg-share detected_object_validation)/config/object_lanelet_filter.param.yaml"/>
 
 <group if="$(var run_radar_detection)">
-<push-ros-namespace namespace="/perception/object_recognition/detection/radar"/>
-<include file="$(find-pkg-share tier4_perception_launch)/launch/object_recognition/detection/radar_based_detection.launch.xml">
-    <arg name="input/radar" value="/sensing/radar/detected_objects"/>
-    <arg name="output/objects" value="$(var radar_detection)"/>
-    <arg name="filter/angle_threshold" value="1.0472"/>
-    <arg name="filter/velocity_threshold" value="3.0"/>
-    <arg name="split/velocity_threshold" value="4.5"/>
-    <arg name="split_range" value="70.0"/>
-    <arg name="radar_object_clustering_param_path" value="$(var radar_object_clustering_param_path)"/>
-</include>
+  <push-ros-namespace namespace="/perception/object_recognition/detection/radar"/>
+  <include file="$(find-pkg-share tier4_perception_launch)/launch/object_recognition/detection/detector/radar_detector.launch.xml">
+      <arg name="input/radar" value="/sensing/radar/detected_objects"/>
+      <arg name="output/objects" value="far_objects"/>
+      <arg name="filter/angle_threshold" value="1.0472"/>
+      <arg name="filter/velocity_threshold" value="3.0"/>
+      <arg name="split/velocity_threshold" value="4.5"/>
+      <arg name="split_range" value="10.0"/>
+      <arg name="radar_lanelet_filtering_range_param" value="$(var radar_lanelet_filtering_range_param)"/>
+      <arg name="radar_object_clustering_param_path" value="$(var radar_object_clustering_param_path)"/>
+  </include>
 </group>
 
 
-<node pkg="rviz2" exec="rviz2" name="rviz2" args="-d $(env HOME)/debug_radar_tracker.rviz"/>
-
 <!-- launch radar object tracking-->
-<include file="$(find-pkg-share radar_object_tracker)/launch/radar_object_tracker.launch.xml">
-    <arg name="input" value="$(var radar_detection)"/>
-    <arg name="output" value="/radar_tracked_objects"/>
-</include>
+<let name="radar_tracked_objects" value="/perception/object_recognition/tracking/radar/far_objects"/>
+<group>
+  <include file="$(find-pkg-share radar_object_tracker)/launch/radar_object_tracker.launch.xml">
+      <arg name="input" value="$(var radar_detection)"/>
+      <arg name="output" value="$(var radar_tracked_objects)"/>
+  </include>
+</group>
 
-<group if="true">
+<group if="false">
     <!--tracking object merger to merge near objects and far objects -->
     <include file="$(find-pkg-share tracking_object_merger)/launch/decorative_tracker_merger.launch.xml">
       <arg name="input/main_object" value="/perception/object_recognition/tracking/objects"/>
-      <arg name="input/sub_object" value="/radar_tracked_objects"/>
+      <arg name="input/sub_object" value="$(var radar_tracked_objects)"/>
       <arg name="output" value="/perception/object_recognition/tracking/merged_objects"/>
       <arg name="data_association_matrix_path" value="$(find-pkg-share autoware_launch)/config/perception/object_recognition/tracking/tracking_object_merger/data_association_matrix.param.yaml"/>
       <arg name="node_param_file_path" value="$(find-pkg-share autoware_launch)/config/perception/object_recognition/tracking/tracking_object_merger/decorative_tracker_merger.param.yaml"/>
