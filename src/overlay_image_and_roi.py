@@ -91,6 +91,21 @@ class ImgViewer(Node):
     ):
         super().__init__("rois_viewer")
 
+        # load from ros parameter
+        self.declare_parameters(
+            namespace="",
+            parameters=[
+                ("image_topics", in_image_topics),
+                ("rois_topics", in_rois_topics),
+            ],
+        )
+        self.image_topics = self.get_parameter("image_topics").value
+        self.rois_topics = self.get_parameter("rois_topics").value
+        assert len(self.image_topics) == len(self.rois_topics), "image_topics and rois_topics must have the same length"
+        # logger
+        self.get_logger().info(f"image_topics: {self.image_topics}")
+        self.get_logger().info(f"rois_topics: {self.rois_topics}")
+
         self.resize_rate = resize_rate
         self.show_timestamp = show_timestamp
         self.is_raw_image = is_raw_image
@@ -102,10 +117,10 @@ class ImgViewer(Node):
         image_msg = Image if is_raw_image else CompressedImage
         qos_profile = QoSProfile(depth=10, reliability=ReliabilityPolicy.BEST_EFFORT)
 
-        num_image = len(in_image_topics)
+        num_image = len(self.image_topics)
         for i in range(num_image):
-            topic = in_image_topics[i]
-            rois_topic = in_rois_topics[i]
+            topic = self.image_topics[i]
+            rois_topic = self.rois_topics[i]
             self.create_subscription(
                 image_msg,
                 topic,
@@ -283,7 +298,6 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--in_image",
-        "-i",
         type=str,
         default="/sensing/camera/camera0/image_rect_color/compressed",
     )
@@ -293,7 +307,7 @@ def parse_args():
         default="/perception/object_recognition/detection/rois0",
     )
     parser.add_argument("--rename_keyward", "-k", type=str, default="camera")
-    parser.add_argument("--resize_rate", "-r", type=float, default=0.9)
+    parser.add_argument("--resize_rate", type=float, default=0.9)
     parser.add_argument("--save_video", "-s", action="store_true")
     parser.add_argument("--raw_image", action="store_true")
     parser.add_argument("--show_timestamp", action="store_true")
@@ -305,8 +319,7 @@ def parse_args():
         choices=["xx1", "x2"],
         default="xx1",
     )
-    args = parser.parse_args()
-
+    args, _ = parser.parse_known_args()
     return args
 
 
@@ -314,6 +327,8 @@ def main(args=None):
     args = parse_args()
     rclpy.init()
 
+    # print("in_image", args.in_image)
+    # print("rois_topic", args.rois_topic)
     input_images = ['/sensing/camera/camera0/image_rect_color/compressed', '/sensing/camera/camera0/image_rect_color/compressed']
     input_rois = ['/perception/object_recognition/detection/rois0', '/perception/object_recognition/detection/tracked/rois0']
 
