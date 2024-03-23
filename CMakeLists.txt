@@ -31,6 +31,12 @@ ament_auto_package(
   config
 )
 
+# install python source
+install(DIRECTORY src/
+  DESTINATION lib/${PROJECT_NAME}
+  FILES_MATCHING PATTERN "*.py"
+)
+
 # install scripts
 file(GLOB SCRIPTS_FILES
   RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}/scripts"

@@ -1,7 +1,7 @@
+#!/usr/bin/env python3
 """
 Autowareのデバッグ時にYOLOのROIと画像を重ねて表示するためのノード
 """
-#!/usr/bin/env python3
 import argparse
 import datetime
 import threading
