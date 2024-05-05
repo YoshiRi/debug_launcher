@@ -1,0 +1,37 @@
+<launch>
+<!-- relay camera info to compressed -->
+
+<!-- camera0 -->
+<node pkg="topic_tools" exec="relay" name="relay_compressed_camera_info_0" args="/sensing/camera/camera0/camera_info /sensing/camera/camera0/image_raw/camera_info" output="screen"/>
+
+<!-- camera1 -->
+<node pkg="topic_tools" exec="relay" name="relay_compressed_camera_info_1" args="/sensing/camera/camera1/camera_info /sensing/camera/camera1/image_raw/camera_info" output="screen"/>
+
+<!-- camera2 -->
+<node pkg="topic_tools" exec="relay" name="relay_compressed_camera_info_2" args="/sensing/camera/camera2/camera_info /sensing/camera/camera2/image_raw/camera_info" output="screen"/>
+
+<!-- camera3 -->
+<node pkg="topic_tools" exec="relay" name="relay_compressed_camera_info_3" args="/sensing/camera/camera3/camera_info /sensing/camera/camera3/image_raw/camera_info" output="screen"/>
+
+<!-- camera4 -->
+<node pkg="topic_tools" exec="relay" name="relay_compressed_camera_info_4" args="/sensing/camera/camera4/camera_info /sensing/camera/camera4/image_raw/camera_info" output="screen"/>
+
+<!-- camera5 -->
+<node pkg="topic_tools" exec="relay" name="relay_compressed_camera_info_5" args="/sensing/camera/camera5/camera_info /sensing/camera/camera5/image_raw/camera_info" output="screen"/>
+
+<!-- camera6 -->
+<node pkg="topic_tools" exec="relay" name="relay_compressed_camera_info_6" args="/sensing/camera/camera6/camera_info /sensing/camera/camera6/image_raw/camera_info" output="screen"/>
+
+<!-- camera7 -->
+<node pkg="topic_tools" exec="relay" name="relay_compressed_camera_info_7" args="/sensing/camera/camera7/camera_info /sensing/camera/camera7/image_raw/camera_info" output="screen"/>
+
+<!-- camera8 -->
+<node pkg="topic_tools" exec="relay" name="relay_compressed_camera_info_8" args="/sensing/camera/camera8/camera_info /sensing/camera/camera8/image_raw/camera_info" output="screen"/>
+
+<!-- camera9 -->
+<node pkg="topic_tools" exec="relay" name="relay_compressed_camera_info_9" args="/sensing/camera/camera9/camera_info /sensing/camera/camera9/image_raw/camera_info" output="screen"/>
+
+<!-- camera10 -->
+<node pkg="topic_tools" exec="relay" name="relay_compressed_camera_info_10" args="/sensing/camera/camera10/camera_info /sensing/camera/camera10/image_raw/camera_info" output="screen"/>
+
+</launch>

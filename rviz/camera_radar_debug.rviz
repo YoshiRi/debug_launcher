@@ -4,8 +4,6 @@ Panels:
     Name: Displays
     Property Tree Widget:
       Expanded:
-        - /Map1
-        - /Map1/Lanelet2VectorMap1
         - /Sensing1/LiDAR1
         - /Sensing1/LiDAR1/ConcatenatePointCloud1
         - /Sensing1/LiDAR1/ConcatenatePointCloud1/Autocompute Value Bounds1
@@ -51,7 +49,6 @@ Panels:
         - /BBox1/PredictedObjects1/MOTORCYCLE1
         - /BBox1/PredictedObjects1/CYCLIST1
         - /BBox1/PredictedObjects1/PEDESTRIAN1
-        - /RadarObjects1
         - /RadarObjects1/radar_far_tracking1/CAR1
         - /RadarObjects1/radar_far_tracking1/TRUCK1
         - /RadarObjects1/radar_far_tracking1/BUS1
@@ -59,11 +56,9 @@ Panels:
         - /RadarObjects1/radar_far_tracking1/MOTORCYCLE1
         - /RadarObjects1/radar_far_tracking1/CYCLIST1
         - /RadarPointclouds1/rear_right1
-        - /MarkerArray3/Topic1
-        - /MarkerArray4/Topic1
-        - /MarkerArray5/Topic1
-        - /MarkerArray6/Topic1
-      Splitter Ratio: 0.49117645621299744
+        - /CameraView1
+        - /CameraView1/front_left1/Status1
+      Splitter Ratio: 0.3121495246887207
     Tree Height: 1693
   - Class: rviz_common/Selection
     Name: Selection
@@ -82,7 +77,7 @@ Panels:
     Experimental: false
     Name: Time
     SyncMode: 0
-    SyncSource: rear_left
+    SyncSource: ""
   - Class: multi_data_monitor::MultiDataMonitor
     Name: MultiDataMonitor
     Path: file:///home/mamorusobue/workspace/pilot-auto.xx1/install/debug_launch/share/debug_launch/config/multi_data_monitor/debug_config.yaml
@@ -130,7 +125,7 @@ Visualization Manager:
         - Class: rviz_common/Group
           Displays:
             - Class: rviz_plugins/SteeringAngle
-              Enabled: true
+              Enabled: false
               Left: 64
               Length: 128
               Name: SteeringAngle
@@ -143,11 +138,11 @@ Visualization Manager:
                 History Policy: Keep Last
                 Reliability Policy: Reliable
                 Value: /vehicle/status/steering_status
-              Value: true
+              Value: false
               Value Scale: 0.14999249577522278
               Value height offset: 0
             - Class: rviz_plugins/ConsoleMeter
-              Enabled: true
+              Enabled: false
               Left: 256
               Length: 128
               Name: ConsoleMeter
@@ -159,7 +154,7 @@ Visualization Manager:
                 History Policy: Keep Last
                 Reliability Policy: Reliable
                 Value: /vehicle/status/velocity_status
-              Value: true
+              Value: false
               Value Scale: 0.14999249577522278
               Value height offset: 0
             - Alpha: 0.9990000128746033
@@ -168,7 +163,7 @@ Visualization Manager:
               Constant Color:
                 Color: 255; 255; 255
                 Value: true
-              Enabled: true
+              Enabled: false
               Name: VelocityHistory
               Scale: 0.30000001192092896
               Timeout: 10
@@ -178,7 +173,7 @@ Visualization Manager:
                 History Policy: Keep Last
                 Reliability Policy: Reliable
                 Value: /vehicle/status/velocity_status
-              Value: true
+              Value: false
             - Alpha: 0.30000001192092896
               Class: rviz_default_plugins/RobotModel
               Collision Enabled: false
@@ -413,17 +408,17 @@ Visualization Manager:
               Wave Color: 255; 255; 255
               Wave Velocity: 40
             - Class: rviz_plugins/MaxVelocity
-              Enabled: true
+              Enabled: false
               Left: 298
               Length: 48
               Name: MaxVelocity
               Text Color: 255; 255; 255
               Top: 140
               Topic: /planning/scenario_planning/current_max_velocity
-              Value: true
+              Value: false
               Value Scale: 0.25
             - Class: rviz_plugins/TurnSignal
-              Enabled: true
+              Enabled: false
               Height: 128
               Left: 98
               Name: TurnSignal
@@ -434,7 +429,7 @@ Visualization Manager:
                 History Policy: Keep Last
                 Reliability Policy: Reliable
                 Value: /vehicle/status/turn_indicators_status
-              Value: true
+              Value: false
               Width: 256
           Enabled: true
           Name: Vehicle
@@ -482,13 +477,33 @@ Visualization Manager:
           Namespaces:
             center_lane_line: true
             center_line_arrows: true
+            crosswalk_lanelet_id: true
+            crosswalk_lanelets: true
+            curbstone: true
+            hatched_road_markings_area: true
+            hatched_road_markings_bound: true
             lane_start_bound: true
             lanelet direction: true
             lanelet_id: true
             left_lane_bound: true
+            no_stopping_area: true
+            parking_lots: true
             partitions: true
+            pedestrian_marking: true
             right_lane_bound: true
             road_lanelets: false
+            shoulder_center_lane_line: true
+            shoulder_center_line_arrows: true
+            shoulder_lane_start_bound: true
+            shoulder_lanelet direction: true
+            shoulder_left_lane_bound: true
+            shoulder_right_lane_bound: true
+            shoulder_road_lanelets: true
+            stop_lines: true
+            traffic_light: true
+            traffic_light_id: true
+            traffic_light_triangle: true
+            walkway_lanelets: true
           Topic:
             Depth: 5
             Durability Policy: Transient Local
@@ -1952,7 +1967,10 @@ Visualization Manager:
             Color: 30; 144; 255
           Name: ValidatedCenterpoint
           Namespaces:
-            {}
+            label: true
+            shape: true
+            twist: true
+            velocity: true
           PEDESTRIAN:
             Alpha: 0.9990000128746033
             Color: 30; 144; 255
@@ -2242,10 +2260,7 @@ Visualization Manager:
             Color: 229; 165; 10
           Name: PredictedObjects
           Namespaces:
-            acceleration: true
-            path: true
-            shape: true
-            velocity: true
+            {}
           PEDESTRIAN:
             Alpha: 0.9990000128746033
             Color: 229; 165; 10
@@ -2269,6 +2284,46 @@ Visualization Manager:
           Visualization Type: Normal
       Enabled: true
       Name: BBox
+    - Class: rviz_common/Group
+      Displays:
+        - Alpha: 0.5
+          Cell Size: 10
+          Class: rviz_default_plugins/Grid
+          Color: 160; 160; 164
+          Enabled: true
+          Line Style:
+            Line Width: 0.20000000298023224
+            Value: Billboards
+          Name: NearGrid
+          Normal Cell Count: 0
+          Offset:
+            X: 0
+            Y: 0
+            Z: 0
+          Plane: XY
+          Plane Cell Count: 20
+          Reference Frame: base_link
+          Value: true
+        - Alpha: 1
+          Cell Size: 50
+          Class: rviz_default_plugins/Grid
+          Color: 160; 160; 164
+          Enabled: true
+          Line Style:
+            Line Width: 0.20000000298023224
+            Value: Billboards
+          Name: Grid
+          Normal Cell Count: 0
+          Offset:
+            X: 0
+            Y: 0
+            Z: 0
+          Plane: XY
+          Plane Cell Count: 20
+          Reference Frame: base_link
+          Value: true
+      Enabled: true
+      Name: Grids
     - Alpha: 0.9990000128746033
       Autocompute Intensity Bounds: true
       Autocompute Value Bounds:
@@ -2302,24 +2357,6 @@ Visualization Manager:
         Value: /perception/obstacle_segmentation/pointcloud
       Use Fixed Frame: true
       Use rainbow: true
-      Value: true
-    - Alpha: 0.5
-      Cell Size: 10
-      Class: rviz_default_plugins/Grid
-      Color: 160; 160; 164
-      Enabled: true
-      Line Style:
-        Line Width: 0.20000000298023224
-        Value: Billboards
-      Name: Grid
-      Normal Cell Count: 0
-      Offset:
-        X: 0
-        Y: 0
-        Z: 0
-      Plane: XY
-      Plane Cell Count: 20
-      Reference Frame: base_link
       Value: true
     - Class: rviz_common/Group
       Displays:
@@ -3468,96 +3505,513 @@ Visualization Manager:
           Value: true
       Enabled: true
       Name: RadarGridAndLinks
-    - Class: rviz_default_plugins/MarkerArray
-      Enabled: false
-      Name: MarkerArray
-      Namespaces:
-        {}
-      Topic:
-        Depth: 5
-        Durability Policy: Volatile
-        History Policy: Keep Last
-        Reliability Policy: Best Effort
-        Value: /radar/front_center/visualization_marker_array
-      Value: false
-    - Class: rviz_default_plugins/MarkerArray
-      Enabled: false
-      Name: MarkerArray
-      Namespaces:
-        {}
-      Topic:
-        Depth: 5
-        Durability Policy: Volatile
-        History Policy: Keep Last
-        Reliability Policy: Best Effort
-        Value: /radar/front_left/visualization_marker_array
-      Value: false
-    - Class: rviz_default_plugins/MarkerArray
-      Enabled: false
-      Name: MarkerArray
-      Namespaces:
-        {}
-      Topic:
-        Depth: 5
-        Durability Policy: Volatile
-        History Policy: Keep Last
-        Reliability Policy: Best Effort
-        Value: /radar/front_right/visualization_marker_array
-      Value: false
-    - Class: rviz_default_plugins/MarkerArray
-      Enabled: false
-      Name: MarkerArray
-      Namespaces:
-        {}
-      Topic:
-        Depth: 5
-        Durability Policy: Volatile
-        History Policy: Keep Last
-        Reliability Policy: Best Effort
-        Value: /radar/rear_center/visualization_marker_array
-      Value: false
-    - Class: rviz_default_plugins/MarkerArray
-      Enabled: false
-      Name: MarkerArray
-      Namespaces:
-        {}
-      Topic:
-        Depth: 5
-        Durability Policy: Volatile
-        History Policy: Keep Last
-        Reliability Policy: Best Effort
-        Value: /radar/rear_left/visualization_marker_array
-      Value: false
-    - Class: rviz_default_plugins/MarkerArray
-      Enabled: false
-      Name: MarkerArray
-      Namespaces:
-        {}
-      Topic:
-        Depth: 5
-        Durability Policy: Volatile
-        History Policy: Keep Last
-        Reliability Policy: Best Effort
-        Value: /radar/rear_right/visualization_marker_array
-      Value: false
-    - Alpha: 1
-      Cell Size: 50
-      Class: rviz_default_plugins/Grid
-      Color: 160; 160; 164
+    - Class: rviz_common/Group
+      Displays:
+        - Class: rviz_default_plugins/MarkerArray
+          Enabled: true
+          Name: MarkerArray
+          Namespaces:
+            radar_targets: true
+            radar_velocity: true
+          Topic:
+            Depth: 5
+            Durability Policy: Volatile
+            History Policy: Keep Last
+            Reliability Policy: Best Effort
+            Value: /radar/front_left/visualization_marker_array
+          Value: true
+        - Class: rviz_default_plugins/MarkerArray
+          Enabled: true
+          Name: MarkerArray
+          Namespaces:
+            radar_targets: true
+            radar_velocity: true
+          Topic:
+            Depth: 5
+            Durability Policy: Volatile
+            History Policy: Keep Last
+            Reliability Policy: Best Effort
+            Value: /radar/front_center/visualization_marker_array
+          Value: true
+        - Class: rviz_default_plugins/MarkerArray
+          Enabled: true
+          Name: MarkerArray
+          Namespaces:
+            radar_targets: true
+            radar_velocity: true
+          Topic:
+            Depth: 5
+            Durability Policy: Volatile
+            History Policy: Keep Last
+            Reliability Policy: Best Effort
+            Value: /radar/front_right/visualization_marker_array
+          Value: true
+        - Class: rviz_default_plugins/MarkerArray
+          Enabled: false
+          Name: MarkerArray
+          Namespaces:
+            {}
+          Topic:
+            Depth: 5
+            Durability Policy: Volatile
+            History Policy: Keep Last
+            Reliability Policy: Best Effort
+            Value: /radar/rear_center/visualization_marker_array
+          Value: false
+        - Class: rviz_default_plugins/MarkerArray
+          Enabled: false
+          Name: MarkerArray
+          Namespaces:
+            {}
+          Topic:
+            Depth: 5
+            Durability Policy: Volatile
+            History Policy: Keep Last
+            Reliability Policy: Best Effort
+            Value: /radar/rear_left/visualization_marker_array
+          Value: false
+        - Class: rviz_default_plugins/MarkerArray
+          Enabled: false
+          Name: MarkerArray
+          Namespaces:
+            {}
+          Topic:
+            Depth: 5
+            Durability Policy: Volatile
+            History Policy: Keep Last
+            Reliability Policy: Best Effort
+            Value: /radar/rear_right/visualization_marker_array
+          Value: false
       Enabled: true
-      Line Style:
-        Line Width: 0.20000000298023224
-        Value: Billboards
-      Name: Grid
-      Normal Cell Count: 0
-      Offset:
-        X: 0
-        Y: 0
-        Z: 0
-      Plane: XY
-      Plane Cell Count: 20
-      Reference Frame: base_link
-      Value: true
+      Name: pointcloud_with_vel
+    - Class: rviz_common/Group
+      Displays:
+        - Class: rviz_default_plugins/Camera
+          Enabled: true
+          Far Plane Distance: 300
+          Image Rendering: background and overlay
+          Name: front_view
+          Overlay Alpha: 0.5
+          Topic:
+            Depth: 5
+            Durability Policy: Volatile
+            History Policy: Keep Last
+            Reliability Policy: Best Effort
+            Value: /sensing/camera/camera0/image_raw/compressed
+          Value: true
+          Visibility:
+            BBox:
+              CameraLiDARFusion: true
+              DetectedObject: true
+              DetectionByTracker: true
+              PredictedObjects: true
+              RawCenterpoint: true
+              TrackedObjects: true
+              TrackedObjects_near: true
+              ValidatedCenterpoint: true
+              Value: true
+            CameraLidarRadarFusion:
+              ROI_fusion: true
+              ValidatedPointPainting: true
+              Value: true
+              camera_lidar_near_objects: true
+              radar_far_object: true
+            CameraView:
+              Value: true
+              front_left: true
+            Control:
+              Debug/MPC: true
+              Debug/PurePursuit: true
+              Predicted Trajectory: true
+              Value: true
+            Grids:
+              Grid: true
+              NearGrid: true
+              Value: true
+            Image: true
+            Localization:
+              EKF:
+                PoseHistory: true
+                Value: true
+              NDT:
+                Aligned: true
+                Initial: true
+                MonteCarloInitialPose: true
+                PoseHistory: true
+                PoseWithCovAligned: true
+                PoseWithCovInitial: true
+                Value: true
+              Value: true
+            Map:
+              Lanelet2VectorMap: true
+              PointCloudMap: true
+              Value: true
+            NoGroundPointCloud_oneshot: true
+            OccupancyGrid: true
+            OriginalMsgs:
+              PredictedObjects_orig: true
+              TrackedObjects_orig: true
+              Value: true
+            Perception:
+              Detection:
+                DetectedObjects: true
+                Value: true
+              Prediction:
+                Maneuver: true
+                Value: true
+              Segmentation: true
+              Tracking:
+                TrackedObjects: true
+                Value: true
+              TrafficLight:
+                MapBasedDetectionResult: true
+                RecognitionResultOnImage: true
+                Value: true
+              Value: true
+            Planning:
+              MissionPlanning:
+                GoalPose: true
+                RouteArea: true
+                Value: true
+              ScenarioPlanning:
+                LaneDriving:
+                  BehaviorPlanning:
+                    DebugMarker:
+                      Arrow: true
+                      Avoidance: true
+                      Blind Spot: true
+                      Crosswalk: true
+                      DetectionArea: true
+                      Intersection: true
+                      LaneChange: true
+                      LaneFollowing: true
+                      NoStoppingArea: true
+                      OcclusionSpot: true
+                      PullOut: true
+                      PullOver: true
+                      RunOut: true
+                      SideShift: true
+                      StopLine: true
+                      TrafficLight: true
+                      Value: true
+                      VirtualTrafficLight: true
+                      Walkway: true
+                    Path: true
+                    PathChangeCandidate: true
+                    Value: true
+                    VirtualWall:
+                      Value: true
+                      VirtualWall (BlindSpot): true
+                      VirtualWall (Crosswalk): true
+                      VirtualWall (DetectionArea): true
+                      VirtualWall (Intersection): true
+                      VirtualWall (MergeFromPrivateArea): true
+                      VirtualWall (NoStoppingArea): true
+                      VirtualWall (OcclusionSpot): true
+                      VirtualWall (RunOut): true
+                      VirtualWall (StopLine): true
+                      VirtualWall (TrafficLight): true
+                      VirtualWall (VirtualTrafficLight): true
+                      VirtualWall (Walkway): true
+                  MotionPlanning:
+                    DebugMarker:
+                      ObstacleAvoidance: true
+                      ObstacleCruise:
+                        CruiseVirtualWall: true
+                        DebugMarker: true
+                        Value: true
+                      ObstacleStop: true
+                      SurroundObstacleCheck: true
+                      Value: true
+                    Trajectory: true
+                    Value: true
+                    VirtualWall:
+                      Value: true
+                      VirtualWall (ObstacleAvoidance): true
+                      VirtualWall (ObstacleCruise): true
+                      VirtualWall (ObstacleStop): true
+                      VirtualWall (SurroundObstacle): true
+                  Value: true
+                ModifiedGoal: true
+                Parking:
+                  Costmap: true
+                  PartialPoseArray: true
+                  PoseArray: true
+                  Value: true
+                ScenarioTrajectory: true
+                Value: true
+              Value: true
+            RadarGridAndLinks:
+              FrontLeft: true
+              FrontRight: true
+              Value: true
+              front_left_radar: true
+              front_right_radar: true
+            RadarObjects:
+              Value: true
+              noise_radar: true
+              radar_far_object: true
+              radar_far_tracking: true
+              radar_high_speed: true
+              radar_noise_filtered: true
+              radar_raw: true
+            RadarPointclouds:
+              Value: true
+              front_center: true
+              front_left: true
+              front_right: true
+              rear_center: true
+              rear_left: true
+              rear_right: true
+            RawRadarBBOX:
+              Value: true
+              front_center: true
+              front_left: true
+              front_right: true
+              rear_center: true
+              rear_left: true
+              rear_right: true
+            Sensing:
+              GNSS:
+                PoseWithCovariance: true
+                Value: true
+              LiDAR:
+                ConcatenatePointCloud: true
+                MeasurementRange: true
+                Value: true
+              Value: true
+            System:
+              Grid: true
+              TF: true
+              Value: false
+              Vehicle:
+                ConsoleMeter: true
+                MaxVelocity: true
+                PolarGridDisplay: true
+                SteeringAngle: true
+                TurnSignal: true
+                Value: true
+                VehicleModel: true
+                VelocityHistory: true
+            Value: true
+            pointcloud_with_vel:
+              MarkerArray: true
+              Value: false
+          Zoom Factor: 1
+        - Class: rviz_default_plugins/Camera
+          Enabled: true
+          Far Plane Distance: 300
+          Image Rendering: background and overlay
+          Name: front_left
+          Overlay Alpha: 0.5
+          Topic:
+            Depth: 5
+            Durability Policy: Volatile
+            History Policy: Keep Last
+            Reliability Policy: Best Effort
+            Value: /sensing/camera/camera3/image_raw/compressed
+          Value: true
+          Visibility:
+            BBox:
+              CameraLiDARFusion: true
+              DetectedObject: true
+              DetectionByTracker: true
+              PredictedObjects: true
+              RawCenterpoint: true
+              TrackedObjects: true
+              TrackedObjects_near: true
+              ValidatedCenterpoint: true
+              Value: true
+            CameraLidarRadarFusion:
+              ROI_fusion: true
+              ValidatedPointPainting: true
+              Value: true
+              camera_lidar_near_objects: true
+              radar_far_object: true
+            CameraView:
+              Value: true
+              front_view: true
+            Control:
+              Debug/MPC: true
+              Debug/PurePursuit: true
+              Predicted Trajectory: true
+              Value: true
+            Grids:
+              Grid: true
+              NearGrid: true
+              Value: true
+            Image: true
+            Localization:
+              EKF:
+                PoseHistory: true
+                Value: true
+              NDT:
+                Aligned: true
+                Initial: true
+                MonteCarloInitialPose: true
+                PoseHistory: true
+                PoseWithCovAligned: true
+                PoseWithCovInitial: true
+                Value: true
+              Value: true
+            Map:
+              Lanelet2VectorMap: true
+              PointCloudMap: true
+              Value: true
+            NoGroundPointCloud_oneshot: true
+            OccupancyGrid: true
+            OriginalMsgs:
+              PredictedObjects_orig: true
+              TrackedObjects_orig: true
+              Value: true
+            Perception:
+              Detection:
+                DetectedObjects: true
+                Value: true
+              Prediction:
+                Maneuver: true
+                Value: true
+              Segmentation: true
+              Tracking:
+                TrackedObjects: true
+                Value: true
+              TrafficLight:
+                MapBasedDetectionResult: true
+                RecognitionResultOnImage: true
+                Value: true
+              Value: true
+            Planning:
+              MissionPlanning:
+                GoalPose: true
+                RouteArea: true
+                Value: true
+              ScenarioPlanning:
+                LaneDriving:
+                  BehaviorPlanning:
+                    DebugMarker:
+                      Arrow: true
+                      Avoidance: true
+                      Blind Spot: true
+                      Crosswalk: true
+                      DetectionArea: true
+                      Intersection: true
+                      LaneChange: true
+                      LaneFollowing: true
+                      NoStoppingArea: true
+                      OcclusionSpot: true
+                      PullOut: true
+                      PullOver: true
+                      RunOut: true
+                      SideShift: true
+                      StopLine: true
+                      TrafficLight: true
+                      Value: true
+                      VirtualTrafficLight: true
+                      Walkway: true
+                    Path: true
+                    PathChangeCandidate: true
+                    Value: true
+                    VirtualWall:
+                      Value: true
+                      VirtualWall (BlindSpot): true
+                      VirtualWall (Crosswalk): true
+                      VirtualWall (DetectionArea): true
+                      VirtualWall (Intersection): true
+                      VirtualWall (MergeFromPrivateArea): true
+                      VirtualWall (NoStoppingArea): true
+                      VirtualWall (OcclusionSpot): true
+                      VirtualWall (RunOut): true
+                      VirtualWall (StopLine): true
+                      VirtualWall (TrafficLight): true
+                      VirtualWall (VirtualTrafficLight): true
+                      VirtualWall (Walkway): true
+                  MotionPlanning:
+                    DebugMarker:
+                      ObstacleAvoidance: true
+                      ObstacleCruise:
+                        CruiseVirtualWall: true
+                        DebugMarker: true
+                        Value: true
+                      ObstacleStop: true
+                      SurroundObstacleCheck: true
+                      Value: true
+                    Trajectory: true
+                    Value: true
+                    VirtualWall:
+                      Value: true
+                      VirtualWall (ObstacleAvoidance): true
+                      VirtualWall (ObstacleCruise): true
+                      VirtualWall (ObstacleStop): true
+                      VirtualWall (SurroundObstacle): true
+                  Value: true
+                ModifiedGoal: true
+                Parking:
+                  Costmap: true
+                  PartialPoseArray: true
+                  PoseArray: true
+                  Value: true
+                ScenarioTrajectory: true
+                Value: true
+              Value: true
+            RadarGridAndLinks:
+              FrontLeft: true
+              FrontRight: true
+              Value: true
+              front_left_radar: true
+              front_right_radar: true
+            RadarObjects:
+              Value: true
+              noise_radar: true
+              radar_far_object: true
+              radar_far_tracking: true
+              radar_high_speed: true
+              radar_noise_filtered: true
+              radar_raw: true
+            RadarPointclouds:
+              Value: true
+              front_center: true
+              front_left: true
+              front_right: true
+              rear_center: true
+              rear_left: true
+              rear_right: true
+            RawRadarBBOX:
+              Value: true
+              front_center: true
+              front_left: true
+              front_right: true
+              rear_center: true
+              rear_left: true
+              rear_right: true
+            Sensing:
+              GNSS:
+                PoseWithCovariance: true
+                Value: true
+              LiDAR:
+                ConcatenatePointCloud: true
+                MeasurementRange: true
+                Value: true
+              Value: true
+            System:
+              Grid: true
+              TF: true
+              Value: false
+              Vehicle:
+                ConsoleMeter: true
+                MaxVelocity: true
+                PolarGridDisplay: true
+                SteeringAngle: true
+                TurnSignal: true
+                Value: true
+                VehicleModel: true
+                VelocityHistory: true
+            Value: true
+            pointcloud_with_vel:
+              MarkerArray: true
+              Value: false
+          Zoom Factor: 1
+      Enabled: true
+      Name: CameraView
   Enabled: true
   Global Options:
     Background Color: 4; 1; 35
@@ -3648,7 +4102,7 @@ Visualization Manager:
   Value: true
   Views:
     Current:
-      Angle: -0.10002126544713974
+      Angle: 3.709981679916382
       Class: rviz_default_plugins/TopDownOrtho
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
@@ -3658,11 +4112,11 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Scale: 10.606295585632324
+      Scale: 5.968903064727783
       Target Frame: base_link
       Value: TopDownOrtho (rviz_default_plugins)
-      X: -72.543701171875
-      Y: -7.301123142242432
+      X: -13.239142417907715
+      Y: -169.79689025878906
     Saved:
       - Class: rviz_default_plugins/ThirdPersonFollower
         Distance: 18
@@ -3735,7 +4189,7 @@ Window Geometry:
     collapsed: false
   MultiDataMonitor:
     collapsed: false
-  QMainWindow State: 000000ff00000000fd0000000400000000000001cd000007f1fc020000001ffb0000001200530065006c0065006300740069006f006e00000001e10000009b0000005c00fffffffb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afc0000003d000004150000000000fffffffa000000010100000002fb0000000a0049006d0061006700650000000000ffffffff0000005e00fffffffb0000000a0049006d0061006700650000000000ffffffff0000000000000000fc000001ef000001810000000000fffffffa000000000100000001fb0000000c00430061006d0065007200610000000000ffffffff0000000000000000fb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c00000261fb0000000c00430061006d00650072006100000002bb000000b50000000000000000fb0000000a0049006d00610067006501000001e9000000b40000000000000000fb0000002c0049006e0069007400690061006c0050006f007300650042007500740074006f006e00500061006e0065006c000000068f000000de0000006e00fffffffb0000002c0049006e0069007400690061006c0050006f007300650042007500740074006f006e00500061006e0065006c000000068f000000de0000000000000000fb0000000c00430061006d0065007200610000000239000001370000000000000000fb0000000c00430061006d00650072006100000002bd000000b30000000000000000fb0000000c00430061006d00650072006100000002ac000000c40000000000000000fb0000000c00430061006d00650072006100000002ac000000c40000000000000000fb0000000a0049006d00610067006500000001f0000000870000000000000000fb0000000c00430061006d0065007200610000000213000000920000000000000000fb0000000c00430061006d006500720061000000024a000001260000000000000000fb0000000a0049006d0061006700650000000212000000930000000000000000fb0000000a0049006d006100670065000000027e000000f20000000000000000fb0000000a0049006d006100670065000000024b000001250000000000000000fb0000000c00430061006d00650072006100000002ac000000c40000000000000000fb0000000a0049006d0061006700650000000205000000b80000000000000000fb00000030005200650063006f0067006e006900740069006f006e0052006500730075006c0074004f006e0049006d00610067006500000000480000025c0000002800fffffffb0000000a0049006d00610067006501000000480000024f0000000000000000fb00000020004d0075006c007400690044006100740061004d006f006e00690074006f007200000001ee0000034a0000008600fffffffb0000000c00430061006d006500720061000000024c000000b10000000000000000fb0000000a0049006d0061006700650000000298000000b90000000000000000fb0000002600420061006700540069006d0065004d0061006e006100670065007200500061006e0065006c010000003d000006d70000004100fffffffb0000002a004100750074006f0077006100720065004400610074006500540069006d006500500061006e0065006c010000071a000001140000004100ffffff0000000100000156000007f1fc0200000003fb000000100044006900730070006c006100790073010000003d000006da000000c900fffffffc0000071d00000111000000c10100001cfa000000000100000002fb0000000a005600690065007700730100000000ffffffff0000010000fffffffb0000001e0054006f006f006c002000500072006f007000650072007400690065007301000004a10000015f0000009d00fffffffb0000001200530065006c0065006300740069006f006e010000025a000000b2000000000000000000000002000007800000006bfc0100000002fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730000000000000007800000000000000000fb0000000a00560069006500770073030000004e00000080000002e10000019700000003000006000000005afc0100000002fb0000000800540069006d0065000000000000000600000002fb00fffffffb0000000800540069006d0065010000000000000450000000000000000000000bd1000007f100000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
+  QMainWindow State: 000000ff00000000fd00000004000000000000069c000007f1fc0200000021fb0000001200530065006c0065006300740069006f006e00000001e10000009b0000005c00fffffffb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afc0000003d000004150000000000fffffffa000000010100000002fb0000000a0049006d0061006700650000000000ffffffff0000005e00fffffffb0000000a0049006d0061006700650000000000ffffffff0000000000000000fc000001ef000001810000000000fffffffa000000000100000001fb0000000c00430061006d0065007200610000000000ffffffff0000000000000000fb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c00000261fb0000000c00430061006d00650072006100000002bb000000b50000000000000000fb0000000a0049006d00610067006501000001e9000000b40000000000000000fb0000002c0049006e0069007400690061006c0050006f007300650042007500740074006f006e00500061006e0065006c000000068f000000de0000006e00fffffffb0000002c0049006e0069007400690061006c0050006f007300650042007500740074006f006e00500061006e0065006c000000068f000000de0000000000000000fb0000000c00430061006d0065007200610000000239000001370000000000000000fb0000000c00430061006d00650072006100000002bd000000b30000000000000000fb0000000c00430061006d00650072006100000002ac000000c40000000000000000fb0000000c00430061006d00650072006100000002ac000000c40000000000000000fb0000000a0049006d00610067006500000001f0000000870000000000000000fb0000000c00430061006d0065007200610000000213000000920000000000000000fb0000000c00430061006d006500720061000000024a000001260000000000000000fb0000000a0049006d0061006700650000000212000000930000000000000000fb0000000a0049006d006100670065000000027e000000f20000000000000000fb0000000a0049006d006100670065000000024b000001250000000000000000fb0000000c00430061006d00650072006100000002ac000000c40000000000000000fb0000000a0049006d0061006700650000000205000000b80000000000000000fb00000030005200650063006f0067006e006900740069006f006e0052006500730075006c0074004f006e0049006d00610067006500000000480000025c0000002800fffffffb0000000a0049006d00610067006501000000480000024f0000000000000000fb00000020004d0075006c007400690044006100740061004d006f006e00690074006f007200000001ee0000034a0000008600fffffffb0000000c00430061006d006500720061000000024c000000b10000000000000000fb0000000a0049006d0061006700650000000298000000b90000000000000000fb0000002600420061006700540069006d0065004d0061006e006100670065007200500061006e0065006c010000003d0000009a0000004100fffffffb0000002a004100750074006f0077006100720065004400610074006500540069006d006500500061006e0065006c01000000dd000000770000004100fffffffb0000001400660072006f006e0074005f0076006900650077010000015a0000031d0000002800fffffffb0000001400660072006f006e0074005f006c006500660074010000047d000003b10000002800ffffff0000000100000156000007f1fc0200000003fb000000100044006900730070006c006100790073010000003d000006da000000c900fffffffc0000071d00000111000000c10100001cfa000000000100000002fb0000000a005600690065007700730100000000ffffffff0000010000fffffffb0000001e0054006f006f006c002000500072006f007000650072007400690065007301000004a10000015f0000009d00fffffffb0000001200530065006c0065006300740069006f006e010000025a000000b2000000000000000000000002000007800000006bfc0100000002fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730000000000000007800000000000000000fb0000000a00560069006500770073030000004e00000080000002e10000019700000003000006000000005afc0100000002fb0000000800540069006d0065000000000000000600000002fb00fffffffb0000000800540069006d0065010000000000000450000000000000000000000702000007f100000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
   RecognitionResultOnImage:
     collapsed: false
   Selection:
@@ -3749,3 +4203,7 @@ Window Geometry:
   Width: 3840
   X: 0
   Y: 0
+  front_left:
+    collapsed: false
+  front_view:
+    collapsed: false

@@ -5,7 +5,7 @@
 
 <!-- map args -->
 <arg name="map_name" default="odaiba" />
-<arg name="rviz_config_path" default="$(find-pkg-share debug_launcher)/rviz/radar_debug.rviz"/>
+<arg name="rviz_config_path" default="$(find-pkg-share debug_launcher)/rviz/camera_radar_debug.rviz"/>
 
 <!-- launch map -->
 <include file="$(find-pkg-share debug_launcher)/launch/map.launch.xml">
@@ -71,5 +71,7 @@
     </include>
 </group>
 
+<!--launch camera info relay for visualization-->
+<include file="$(find-pkg-share debug_launcher)/launch/relay_compressed_camera_info.xml.launch"/>
 
 </launch>
