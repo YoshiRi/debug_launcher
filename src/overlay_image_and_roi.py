@@ -1,7 +1,7 @@
+#!/usr/bin/env python3
 """
 Autowareのデバッグ時にYOLOのROIと画像を重ねて表示するためのノード
 """
-#!/usr/bin/env python3
 import argparse
 import datetime
 import threading
@@ -17,16 +17,16 @@ from rclpy.qos import QoSProfile, ReliabilityPolicy
 from sensor_msgs.msg import CompressedImage, Image
 from tier4_perception_msgs.msg import DetectedObjectsWithFeature
 
-NUM_IMAGE = 2
+NUM_IMAGE = 6
 LABEL_COLOR_MAP = {
-    0: (255, 0, 100),  # UNKNOWN
-    1: (255, 255, 0),  # CAR
-    2: (80, 127, 255),  # TRUCK
-    3: (0, 0, 255),  # BUS
-    4: (0, 140, 255),  # TRAILER
-    5: (120, 20, 255),  # MOTORCYCLE
-    6: (120, 120, 200),  # BICYCLE
-    7: (0, 226, 0),  # PEDESTRIAN
+    0: (255, 0, 100),  # UNKNOWN - Bright Pink
+    1: (255, 255, 0),  # CAR - Yellow
+    2: (80, 127, 255),  # TRUCK - Light Blue
+    3: (0, 0, 255),  # BUS - Blue
+    4: (0, 140, 255),  # TRAILER - Azure
+    5: (120, 20, 255),  # MOTORCYCLE - Violet
+    6: (120, 120, 200),  # BICYCLE - Light Slate Gray
+    7: (0, 226, 0),  # PEDESTRIAN - Green
 }
 
 def draw_title_image(img:np.array, title:str):
@@ -76,6 +76,49 @@ def fit_bbox_to_image(img_shape, bbox) -> bool:
     return True
 
 
+# 単一画像にタイトルを描画する関数
+def draw_title_image(img: np.array, title: str) -> None:
+    cv2.putText(img, title, (10, 100), cv2.FONT_HERSHEY_PLAIN, 6, (255, 0, 0), 2, cv2.LINE_AA)
+
+# バウンディングボックスが有効か判定する関数
+def is_valid_bbox(bbox) -> bool:
+    area = bbox.width * bbox.height
+    return area > 0
+
+# バウンディングボックスを画像の範囲に収める関数
+def fit_bbox_to_image(img_shape: Tuple[int, int, int], bbox) -> bool:
+    img_height, img_width, _ = img_shape
+    x_offset, y_offset, width, height = bbox.x_offset, bbox.y_offset, bbox.width, bbox.height
+
+    # bbox outside of image
+    if x_offset > img_width or y_offset > img_height:
+        bbox.x_offset, bbox.y_offset, bbox.width, bbox.height = 0, 0, 0, 0
+        return False
+
+    # reshape bbox inside image
+    bbox.x_offset = max(x_offset, 0)
+    bbox.y_offset = max(y_offset, 0)
+    if x_offset + width > img_width:
+        bbox.width = img_width - bbox.x_offset
+    if y_offset + height > img_height:
+        bbox.height = img_height - bbox.y_offset
+
+    return True
+
+# 画像上にROIを描画する関数
+def process_image_and_rois(image: np.array, rois: List, color_map: Dict[int, Tuple[int, int, int]], show_title: bool, title: str = "") -> np.array:
+    img_shape = image.shape
+    for roi in rois:
+        bbox = roi.feature.roi
+        cls = roi.object.classification[0].label
+        color = color_map.get(cls, (255, 255, 255))  # Use white as default color
+        if fit_bbox_to_image(img_shape, bbox) and is_valid_bbox(bbox):
+            cv2.rectangle(image, (bbox.x_offset, bbox.y_offset), (bbox.x_offset + bbox.width, bbox.y_offset + bbox.height), color=color, thickness=3)
+    if show_title:
+        draw_title_image(image, title)
+    return image
+
+
 class ImgViewer(Node):
     def __init__(
         self,
@@ -88,8 +131,24 @@ class ImgViewer(Node):
         is_raw_image: bool,
         product: str,
         show_title: bool,
+        publish_topic: bool = False,
     ):
         super().__init__("rois_viewer")
+
+        # load from ros parameter
+        self.declare_parameters(
+            namespace="",
+            parameters=[
+                ("image_topics", in_image_topics),
+                ("rois_topics", in_rois_topics),
+            ],
+        )
+        self.image_topics = self.get_parameter("image_topics").value
+        self.rois_topics = self.get_parameter("rois_topics").value
+        assert len(self.image_topics) == len(self.rois_topics), "image_topics and rois_topics must have the same length"
+        # logger
+        self.get_logger().info(f"image_topics: {self.image_topics}")
+        self.get_logger().info(f"rois_topics: {self.rois_topics}")
 
         self.resize_rate = resize_rate
         self.show_timestamp = show_timestamp
@@ -101,11 +160,12 @@ class ImgViewer(Node):
         self.lock = threading.Lock()
         image_msg = Image if is_raw_image else CompressedImage
         qos_profile = QoSProfile(depth=10, reliability=ReliabilityPolicy.BEST_EFFORT)
+        self.img_publishers = {i: None for i in range(len(self.image_topics))}
 
-        num_image = len(in_image_topics)
+        num_image = len(self.image_topics)
         for i in range(num_image):
-            topic = in_image_topics[i]
-            rois_topic = in_rois_topics[i]
+            topic = self.image_topics[i]
+            rois_topic = self.rois_topics[i]
             self.create_subscription(
                 image_msg,
                 topic,
@@ -118,14 +178,20 @@ class ImgViewer(Node):
                 partial(self.rois_callback, image_id=i),
                 qos_profile,
             )
-        self.images = {i: None for i in range(NUM_IMAGE)}
-        self.rois = {i: None for i in range(NUM_IMAGE)}
-        self.image_stamps = {i: None for i in range(NUM_IMAGE)}
-        self.rois_stamps = {i: None for i in range(NUM_IMAGE)}
-        self.image_buff = {i: [] for i in range(NUM_IMAGE)}
-        self.image_stamp_buff = {i: [] for i in range(NUM_IMAGE)}
-        self.rois_buff = {i: [] for i in range(NUM_IMAGE)}
-        self.rois_stamp_buff = {i: [] for i in range(NUM_IMAGE)}
+            if publish_topic:
+                self.img_publishers[i] = self.create_publisher(Image, f"{rename_keyward}{i}/image_with_roi", qos_profile)
+
+        # # init publisher
+        # self.img_publishers = {i: self.create_publisher(image_msg, f"{rename_keyward}{i}/image_with_roi", qos_profile) for i in range(num_image)} 
+        
+        self.images = {i: None for i in range(num_image)}
+        self.rois = {i: None for i in range(num_image)}
+        self.image_stamps = {i: None for i in range(num_image)}
+        self.rois_stamps = {i: None for i in range(num_image)}
+        self.image_buff = {i: [] for i in range(num_image)}
+        self.image_stamp_buff = {i: [] for i in range(num_image)}
+        self.rois_buff = {i: [] for i in range(num_image)}
+        self.rois_stamp_buff = {i: [] for i in range(num_image)}
 
         self.fourcc = None
         self.video_writer = None
@@ -176,8 +242,9 @@ class ImgViewer(Node):
                 self.show_image()
 
     def lookup_index(self, stamp_buff, stamp):
-        min_offset_index = [None for i in range(NUM_IMAGE)]
-        for i in range(NUM_IMAGE):
+        num_image = len(self.image_topics)
+        min_offset_index = [None for i in range(num_image)]
+        for i in range(num_image):
             min_offset = 0.1
             for index, item in enumerate(stamp_buff[i]):
                 offset = stamp - item
@@ -187,14 +254,15 @@ class ImgViewer(Node):
         return min_offset_index
 
     def is_synced(self, stamp):
+        num_image = len(self.image_topics)
         roi_indices = self.lookup_index(self.rois_stamp_buff, stamp)
         img_indices = self.lookup_index(self.image_stamp_buff, stamp)
         num_image = len(roi_indices)
-        for i in range(NUM_IMAGE):
+        for i in range(num_image):
             if roi_indices[i] is None or img_indices[i] is None:
                 return False
 
-        for i in range(NUM_IMAGE):
+        for i in range(num_image):
             # Set data
             self.images[i] = self.image_buff[i][img_indices[i]]
             self.image_stamps[i] = self.image_stamp_buff[i][img_indices[i]]
@@ -209,81 +277,55 @@ class ImgViewer(Node):
         return True
 
     def show_image(self):
-        titles = ["yolox", "bytetrack"]
-        if all([img is not None for img in self.images.values()]):
-            if self.show_timestamp:
-                for i in range(NUM_IMAGE):
-                    image = self.images[i]
-                    timestamp = self.image_stamps[i]
-                    image = cv2.putText(
-                        image,
-                        str(timestamp),
-                        (10, 100),
-                        cv2.FONT_HERSHEY_PLAIN,
-                        6,
-                        (255, 0, 0),
-                        2,
-                        cv2.LINE_AA,
-                    )
-                    image = cv2.putText(
-                        image,
-                        str(dt.fromtimestamp(timestamp)),
-                        (10, 200),
-                        cv2.FONT_HERSHEY_PLAIN,
-                        6,
-                        (255, 0, 0),
-                        2,
-                        cv2.LINE_AA,
-                    )
-                    self.images[i] = image
+        num_image = len(self.image_topics)
+        # titles = ["yolox", "bytetrack"]
+        if not all([img is not None for img in self.images.values()]):
+            return
 
-            for i in range(NUM_IMAGE):
-                img_shape = self.images[i].shape
-                for roi in self.rois[i]:
-                    bbox = roi.feature.roi
-                    cls = roi.object.classification[0].label
-                    color = self.color_map[cls]
-                    fit_bbox_to_image(img_shape, bbox)
-                    if not is_valid_bbox(bbox):
-                        print(f"invalid bbox:", bbox, " skip drawing to image ", i)
-                        continue
-                    cv2.rectangle(
-                        self.images[i],
-                        (bbox.x_offset, bbox.y_offset),
-                        (bbox.x_offset + bbox.width, bbox.y_offset + bbox.height),
-                        color=color,
-                        thickness=3,
-                    )
-                if self.show_title:
-                    draw_title_image(self.images[i], titles[i])
+        # process images to show
+        for i in range(num_image):
+            process_image_and_rois(self.images[i], self.rois[i], self.color_map, self.show_title, "")
+            if self.img_publishers[i] is not None:
+                msg = Image()
+                stamp_sec: float = self.rois_stamps[i]
+                msg.header.stamp = rclpy.time.Time(seconds=int(stamp_sec), nanoseconds=int((stamp_sec - int(stamp_sec)) * 1e9)).to_msg()
+                msg.height = self.images[i].shape[0]
+                msg.width = self.images[i].shape[1]
+                msg.encoding = "bgr8"
+                msg.is_bigendian = 0
+                msg.step = 3 * msg.width
+                msg.data = self.images[i].tobytes()
+                self.img_publishers[i].publish(msg)
+                # msg.format = "jpeg"
+                # msg.data = cv2.imencode(".jpg", self.images[i])[1].tobytes()
+                # self.img_publishers[i].publish(msg)
 
-            img = cv2.hconcat([self.images[0], self.images[1]])
+        img = cv2.hconcat([self.images[0]])
 
-            # if self.product == "xx1":
-            #     img_f = cv2.hconcat([self.images[2], self.images[0], self.images[4]])
-            #     img_r = cv2.hconcat([self.images[3], self.images[1], self.images[5]])
-            # elif self.product == "x2":
-            #     img_f = cv2.hconcat([self.images[5], self.images[0], self.images[1]])
-            #     img_r = cv2.hconcat([self.images[4], self.images[3], self.images[2]])
-            # else:
-            #     img_f = cv2.hconcat([self.images[0], self.images[1], self.images[2]])
-            #     img_r = cv2.hconcat([self.images[3], self.images[4], self.images[5]])
+        # if self.product == "xx1":
+        #     img_f = cv2.hconcat([self.images[2], self.images[0], self.images[4]])
+        #     img_r = cv2.hconcat([self.images[3], self.images[1], self.images[5]])
+        # elif self.product == "x2":
+        #     img_f = cv2.hconcat([self.images[5], self.images[0], self.images[1]])
+        #     img_r = cv2.hconcat([self.images[4], self.images[3], self.images[2]])
+        # else:
+        #     img_f = cv2.hconcat([self.images[0], self.images[1], self.images[2]])
+        #     img_r = cv2.hconcat([self.images[3], self.images[4], self.images[5]])
 
-            # img = cv2.vconcat([img_f, img_r])
-            img_resize = cv2.resize(img, None, fx=self.resize_rate, fy=self.resize_rate)
+        # img = cv2.vconcat([img_f, img_r])
+        img_resize = cv2.resize(img, None, fx=self.resize_rate, fy=self.resize_rate)
 
-            cv2.imshow("image", img_resize)
-            cv2.waitKey(1)
+        cv2.imshow("image", img_resize)
+        cv2.waitKey(1)
 
-            if self.save_video:
-                self.video_writer.write(img_resize)
+        if self.save_video:
+            self.video_writer.write(img_resize)
 
 
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--in_image",
-        "-i",
         type=str,
         default="/sensing/camera/camera0/image_rect_color/compressed",
     )
@@ -293,7 +335,7 @@ def parse_args():
         default="/perception/object_recognition/detection/rois0",
     )
     parser.add_argument("--rename_keyward", "-k", type=str, default="camera")
-    parser.add_argument("--resize_rate", "-r", type=float, default=0.9)
+    parser.add_argument("--resize_rate", type=float, default=0.9)
     parser.add_argument("--save_video", "-s", action="store_true")
     parser.add_argument("--raw_image", action="store_true")
     parser.add_argument("--show_timestamp", action="store_true")
@@ -305,8 +347,7 @@ def parse_args():
         choices=["xx1", "x2"],
         default="xx1",
     )
-    args = parser.parse_args()
-
+    args, _ = parser.parse_known_args()
     return args
 
 
@@ -314,6 +355,8 @@ def main(args=None):
     args = parse_args()
     rclpy.init()
 
+    # print("in_image", args.in_image)
+    # print("rois_topic", args.rois_topic)
     input_images = ['/sensing/camera/camera0/image_rect_color/compressed', '/sensing/camera/camera0/image_rect_color/compressed']
     input_rois = ['/perception/object_recognition/detection/rois0', '/perception/object_recognition/detection/tracked/rois0']
 

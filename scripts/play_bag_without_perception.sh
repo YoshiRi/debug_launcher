@@ -44,5 +44,12 @@ if [[ $(echo "$OFFSET > 5" | bc) -eq 1 ]]; then
     (ros2 bag play "$BAG_NAME" --topics /tf_static --clock)
 fi
 
+# switch sqlite3 or mcap depending on the bag file format
+if [[ $(ros2 bag info "$BAG_NAME" | grep -c sqlite3) -eq 1 ]]; then
+    COMMAND_OPTION+=" --storage sqlite3"
+else
+    COMMAND_OPTION+=" --storage mcap"
+fi
+
 # 2. main command
-ros2 bag play "$BAG_NAME" $COMMAND_OPTION -r 0.2 --clock 200 -s sqlite3 --start-offset $OFFSET
+ros2 bag play "$BAG_NAME" $COMMAND_OPTION -r 0.2 --clock 200 --start-offset $OFFSET

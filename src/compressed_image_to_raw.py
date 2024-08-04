@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """
 Autowareのデバッグ時に、圧縮画像を生の画像に変換するノードです。
 image_transportを使っても下記のように書けますが、QoSがBEST_EFFORTにならないので結局書き直す羽目になりました。
@@ -51,7 +52,7 @@ class ImageRepublisher(Node):
 def main(args=None):
     rclpy.init(args=args)
     
-    # ここに入力トピックと出力トピックのリストを指定します
+    # input_topics and output_topics
     input_topics = ['/sensing/camera/camera0/image_rect_color/compressed', '/sensing/camera/camera1/image_rect_color/compressed', '/sensing/camera/camera2/image_rect_color/compressed', '/sensing/camera/camera3/image_rect_color/compressed',
                     '/sensing/camera/camera4/image_rect_color/compressed', '/sensing/camera/camera5/image_rect_color/compressed']
     output_topics = ['/sensing/camera/camera0/image_rect_color', '/sensing/camera/camera1/image_rect_color', '/sensing/camera/camera2/image_rect_color', '/sensing/camera/camera3/image_rect_color',

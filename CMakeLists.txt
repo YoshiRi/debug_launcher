@@ -29,15 +29,28 @@ ament_auto_package(
   INSTALL_TO_SHARE
   launch
   config
+  rviz
 )
 
-# install scripts
+# # install python source
+# install(DIRECTORY src/
+#   DESTINATION lib/${PROJECT_NAME}
+#   FILES_MATCHING PATTERN "*.py"
+# )
+
+# install scripts and python source
 file(GLOB SCRIPTS_FILES
-  RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}/scripts"
+  RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}"
   "${CMAKE_CURRENT_SOURCE_DIR}/scripts/*.sh")
+file(GLOB PYTHON_FILES
+  RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}"
+  "${CMAKE_CURRENT_SOURCE_DIR}/src/*.py")
+# concatenate
+list(APPEND SCRIPTS_FILES ${PYTHON_FILES})
+# install
 foreach(SCRIPTS_FILE ${SCRIPTS_FILES})
   message(STATUS "Installing script: ${SCRIPTS_FILE}")
-  install(PROGRAMS scripts/${SCRIPTS_FILE}
+  install(PROGRAMS ${SCRIPTS_FILE}
     DESTINATION lib/${PROJECT_NAME}
   )
 endforeach()

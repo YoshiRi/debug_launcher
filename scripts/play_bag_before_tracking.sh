@@ -74,4 +74,11 @@ for topic in ${PERCEPTION_REMAP_TOPICS[@]}; do
     COMMAND_OPTION+=" $topic:=$RENAMED_PERCEPTION_REMAP_TOPICS"
 done
 
-ros2 bag play "$BAG_NAME" $COMMAND_OPTION -r $RATE --clock 200 -s sqlite3 --start-offset $OFFSET
+# switch sqlite3 or mcap depending on the bag file format
+if [[ $(ros2 bag info "$BAG_NAME" | grep -c sqlite3) -eq 1 ]]; then
+    COMMAND_OPTION+=" --storage sqlite3"
+else
+    COMMAND_OPTION+=" --storage mcap"
+fi
+
+ros2 bag play "$BAG_NAME" $COMMAND_OPTION -r $RATE --clock 200  --start-offset $OFFSET
