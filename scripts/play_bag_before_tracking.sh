@@ -48,6 +48,7 @@ DETECTION_REMAP_TOPICS=(
 RADAR_REMAP_TOPICS=(
     "/perception/object_recognition/tracking/radar_objects"
 )
+PLANNING_TOPIC=$(ros2 bag info "$BAG_NAME" | awk '{print $2}' | grep -e /planning)
 
 # Initialize the perception remap topic array with the basic topics
 PERCEPTION_REMAP_TOPICS=("${BASIC_REMAP_TOPICS[@]}")
@@ -61,6 +62,9 @@ fi
 if [ $REMAP_DETECTION -eq 1 ]; then
     PERCEPTION_REMAP_TOPICS+=("${DETECTION_REMAP_TOPICS[@]}")
 fi
+
+# Add planning topics
+PERCEPTION_REMAP_TOPICS+=("$PLANNING_TOPIC")
 
 COMMAND_OPTION='--remap '
 
