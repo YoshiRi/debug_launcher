@@ -26,8 +26,8 @@
 <!-- launch radar detections -->
 <arg name="run_radar_detection" default="true" description="run radar detection"/>
 <let name="radar_detection" value="/perception/object_recognition/detection/radar/far_objects"/>
-<arg name="radar_object_clustering_param_path" default="$(find-pkg-share radar_object_clustering)/config/radar_object_clustering.param.yaml"/>
-<arg name="radar_lanelet_filtering_range_param" default="$(find-pkg-share detected_object_validation)/config/object_lanelet_filter.param.yaml"/>
+<arg name="radar_object_clustering_param_path" default="$(find-pkg-share autoware_radar_object_clustering)/config/radar_object_clustering.param.yaml"/>
+<arg name="radar_lanelet_filtering_range_param" default="$(find-pkg-share autoware_detected_object_validation)/config/object_lanelet_filter.param.yaml"/>
 
 <group if="$(var run_radar_detection)">
   <push-ros-namespace namespace="/perception/object_recognition/detection/radar"/>
@@ -47,7 +47,7 @@
 <!-- launch radar object tracking-->
 <let name="radar_tracked_objects" value="/perception/object_recognition/tracking/radar/far_objects"/>
 <group>
-  <include file="$(find-pkg-share radar_object_tracker)/launch/radar_object_tracker.launch.xml">
+  <include file="$(find-pkg-share autoware_radar_object_tracker)/launch/radar_object_tracker.launch.xml">
       <arg name="input" value="$(var radar_detection)"/>
       <arg name="output" value="$(var radar_tracked_objects)"/>
   </include>
@@ -55,7 +55,7 @@
 
 <group if="false">
     <!--tracking object merger to merge near objects and far objects -->
-    <include file="$(find-pkg-share tracking_object_merger)/launch/decorative_tracker_merger.launch.xml">
+    <include file="$(find-pkg-share autoware_tracking_object_merger)/launch/decorative_tracker_merger.launch.xml">
       <arg name="input/main_object" value="/perception/object_recognition/tracking/objects"/>
       <arg name="input/sub_object" value="$(var radar_tracked_objects)"/>
       <arg name="output" value="/perception/object_recognition/tracking/merged_objects"/>
@@ -64,7 +64,7 @@
     </include>
 
     <!-- prediction -->
-    <include file="$(find-pkg-share map_based_prediction)/launch/map_based_prediction.launch.xml">
+    <include file="$(find-pkg-share autoware_map_based_prediction)/launch/map_based_prediction.launch.xml">
       <arg name="output_topic" value="/perception/object_recognition/objects/debug"/>
       <arg name="input_topic" value="/perception/object_recognition/tracking/merged_objects"/>
       <!-- <arg name="param_path" value="$(var object_recognition_prediction_map_based_prediction_param_path)"/> -->
