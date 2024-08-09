@@ -805,7 +805,7 @@ Visualization Manager:
               CYCLIST:
                 Alpha: 0.9990000128746033
                 Color: 119; 11; 32
-              Class: autoware_auto_perception_rviz_plugin/DetectedObjects
+              Class: autoware_perception_rviz_plugin/DetectedObjects
               Display Acceleration: true
               Display Existence Probability: false
               Display Label: true
@@ -857,7 +857,7 @@ Visualization Manager:
               CYCLIST:
                 Alpha: 0.9990000128746033
                 Color: 119; 11; 32
-              Class: autoware_auto_perception_rviz_plugin/TrackedObjects
+              Class: autoware_perception_rviz_plugin/TrackedObjects
               Display Acceleration: true
               Display Existence Probability: false
               Display Label: true
@@ -1887,7 +1887,7 @@ Visualization Manager:
           CYCLIST:
             Alpha: 0.9990000128746033
             Color: 153; 193; 241
-          Class: autoware_auto_perception_rviz_plugin/DetectedObjects
+          Class: autoware_perception_rviz_plugin/DetectedObjects
           Display Acceleration: true
           Display Existence Probability: false
           Display Label: true
@@ -1935,7 +1935,7 @@ Visualization Manager:
           CYCLIST:
             Alpha: 0.9990000128746033
             Color: 30; 144; 255
-          Class: autoware_auto_perception_rviz_plugin/DetectedObjects
+          Class: autoware_perception_rviz_plugin/DetectedObjects
           Display Acceleration: true
           Display Existence Probability: false
           Display Label: true
@@ -1983,7 +1983,7 @@ Visualization Manager:
           CYCLIST:
             Alpha: 0.9990000128746033
             Color: 145; 65; 172
-          Class: autoware_auto_perception_rviz_plugin/DetectedObjects
+          Class: autoware_perception_rviz_plugin/DetectedObjects
           Display Acceleration: true
           Display Existence Probability: false
           Display Label: true
@@ -2031,7 +2031,7 @@ Visualization Manager:
           CYCLIST:
             Alpha: 0.9990000128746033
             Color: 255; 170; 255
-          Class: autoware_auto_perception_rviz_plugin/DetectedObjects
+          Class: autoware_perception_rviz_plugin/DetectedObjects
           Display Acceleration: true
           Display Existence Probability: false
           Display Label: true
@@ -2079,7 +2079,7 @@ Visualization Manager:
           CYCLIST:
             Alpha: 0.9990000128746033
             Color: 26; 95; 180
-          Class: autoware_auto_perception_rviz_plugin/DetectedObjects
+          Class: autoware_perception_rviz_plugin/DetectedObjects
           Display Acceleration: true
           Display Existence Probability: false
           Display Label: true
@@ -2127,7 +2127,7 @@ Visualization Manager:
           CYCLIST:
             Alpha: 0.9990000128746033
             Color: 143; 240; 164
-          Class: autoware_auto_perception_rviz_plugin/TrackedObjects
+          Class: autoware_perception_rviz_plugin/TrackedObjects
           Display Acceleration: true
           Display Existence Probability: false
           Display Label: true
@@ -2176,7 +2176,7 @@ Visualization Manager:
           CYCLIST:
             Alpha: 0.9990000128746033
             Color: 143; 240; 164
-          Class: autoware_auto_perception_rviz_plugin/TrackedObjects
+          Class: autoware_perception_rviz_plugin/TrackedObjects
           Display Acceleration: true
           Display Existence Probability: false
           Display Label: true
@@ -2225,7 +2225,7 @@ Visualization Manager:
           CYCLIST:
             Alpha: 0.9990000128746033
             Color: 229; 165; 10
-          Class: autoware_auto_perception_rviz_plugin/PredictedObjects
+          Class: autoware_perception_rviz_plugin/PredictedObjects
           Display Acceleration: true
           Display Existence Probability: false
           Display Label: false
@@ -2332,7 +2332,7 @@ Visualization Manager:
           CYCLIST:
             Alpha: 0.9990000128746033
             Color: 119; 11; 32
-          Class: autoware_auto_perception_rviz_plugin/DetectedObjects
+          Class: autoware_perception_rviz_plugin/DetectedObjects
           Display Acceleration: true
           Display Existence Probability: false
           Display Label: true
@@ -2380,7 +2380,7 @@ Visualization Manager:
           CYCLIST:
             Alpha: 0.9990000128746033
             Color: 119; 11; 32
-          Class: autoware_auto_perception_rviz_plugin/DetectedObjects
+          Class: autoware_perception_rviz_plugin/DetectedObjects
           Display Acceleration: true
           Display Existence Probability: false
           Display Label: true
@@ -2428,7 +2428,7 @@ Visualization Manager:
           CYCLIST:
             Alpha: 0.9990000128746033
             Color: 119; 11; 32
-          Class: autoware_auto_perception_rviz_plugin/DetectedObjects
+          Class: autoware_perception_rviz_plugin/DetectedObjects
           Display Acceleration: true
           Display Existence Probability: false
           Display Label: true
@@ -2476,7 +2476,7 @@ Visualization Manager:
           CYCLIST:
             Alpha: 0.9990000128746033
             Color: 255; 170; 255
-          Class: autoware_auto_perception_rviz_plugin/DetectedObjects
+          Class: autoware_perception_rviz_plugin/DetectedObjects
           Display Acceleration: true
           Display Existence Probability: false
           Display Label: true
@@ -2527,7 +2527,7 @@ Visualization Manager:
           CYCLIST:
             Alpha: 0.9990000128746033
             Color: 38; 162; 105
-          Class: autoware_auto_perception_rviz_plugin/TrackedObjects
+          Class: autoware_perception_rviz_plugin/TrackedObjects
           Display Acceleration: true
           Display Existence Probability: false
           Display Label: true
@@ -2576,7 +2576,7 @@ Visualization Manager:
           CYCLIST:
             Alpha: 0.9990000128746033
             Color: 119; 11; 32
-          Class: autoware_auto_perception_rviz_plugin/DetectedObjects
+          Class: autoware_perception_rviz_plugin/DetectedObjects
           Display Acceleration: true
           Display Existence Probability: false
           Display Label: true
@@ -2628,7 +2628,7 @@ Visualization Manager:
           CYCLIST:
             Alpha: 0.9990000128746033
             Color: 205; 171; 143
-          Class: autoware_auto_perception_rviz_plugin/PredictedObjects
+          Class: autoware_perception_rviz_plugin/PredictedObjects
           Display Acceleration: true
           Display Existence Probability: false
           Display Label: true
@@ -2676,7 +2676,7 @@ Visualization Manager:
           CYCLIST:
             Alpha: 0.9990000128746033
             Color: 119; 118; 123
-          Class: autoware_auto_perception_rviz_plugin/TrackedObjects
+          Class: autoware_perception_rviz_plugin/TrackedObjects
           Display Acceleration: true
           Display Existence Probability: false
           Display Label: true
@@ -2729,7 +2729,7 @@ Visualization Manager:
           CYCLIST:
             Alpha: 0.9990000128746033
             Color: 30; 144; 255
-          Class: autoware_auto_perception_rviz_plugin/DetectedObjects
+          Class: autoware_perception_rviz_plugin/DetectedObjects
           Display Acceleration: true
           Display Existence Probability: false
           Display Label: true
@@ -2777,7 +2777,7 @@ Visualization Manager:
           CYCLIST:
             Alpha: 0.9990000128746033
             Color: 255; 170; 255
-          Class: autoware_auto_perception_rviz_plugin/DetectedObjects
+          Class: autoware_perception_rviz_plugin/DetectedObjects
           Display Acceleration: true
           Display Existence Probability: false
           Display Label: true
@@ -2825,7 +2825,7 @@ Visualization Manager:
           CYCLIST:
             Alpha: 0.9990000128746033
             Color: 26; 95; 180
-          Class: autoware_auto_perception_rviz_plugin/DetectedObjects
+          Class: autoware_perception_rviz_plugin/DetectedObjects
           Display Acceleration: true
           Display Existence Probability: false
           Display Label: true
@@ -2873,7 +2873,7 @@ Visualization Manager:
           CYCLIST:
             Alpha: 0.9990000128746033
             Color: 255; 170; 255
-          Class: autoware_auto_perception_rviz_plugin/DetectedObjects
+          Class: autoware_perception_rviz_plugin/DetectedObjects
           Display Acceleration: true
           Display Existence Probability: false
           Display Label: true
@@ -2925,7 +2925,7 @@ Visualization Manager:
           CYCLIST:
             Alpha: 0.9990000128746033
             Color: 119; 11; 32
-          Class: autoware_auto_perception_rviz_plugin/DetectedObjects
+          Class: autoware_perception_rviz_plugin/DetectedObjects
           Display Acceleration: true
           Display Existence Probability: false
           Display Label: true
@@ -2973,7 +2973,7 @@ Visualization Manager:
           CYCLIST:
             Alpha: 0.9990000128746033
             Color: 119; 11; 32
-          Class: autoware_auto_perception_rviz_plugin/DetectedObjects
+          Class: autoware_perception_rviz_plugin/DetectedObjects
           Display Acceleration: true
           Display Existence Probability: false
           Display Label: true
@@ -3021,7 +3021,7 @@ Visualization Manager:
           CYCLIST:
             Alpha: 0.9990000128746033
             Color: 119; 11; 32
-          Class: autoware_auto_perception_rviz_plugin/DetectedObjects
+          Class: autoware_perception_rviz_plugin/DetectedObjects
           Display Acceleration: true
           Display Existence Probability: false
           Display Label: true
@@ -3069,7 +3069,7 @@ Visualization Manager:
           CYCLIST:
             Alpha: 0.9990000128746033
             Color: 119; 11; 32
-          Class: autoware_auto_perception_rviz_plugin/DetectedObjects
+          Class: autoware_perception_rviz_plugin/DetectedObjects
           Display Acceleration: true
           Display Existence Probability: false
           Display Label: true
@@ -3117,7 +3117,7 @@ Visualization Manager:
           CYCLIST:
             Alpha: 0.9990000128746033
             Color: 119; 11; 32
-          Class: autoware_auto_perception_rviz_plugin/DetectedObjects
+          Class: autoware_perception_rviz_plugin/DetectedObjects
           Display Acceleration: true
           Display Existence Probability: false
           Display Label: true
@@ -3165,7 +3165,7 @@ Visualization Manager:
           CYCLIST:
             Alpha: 0.9990000128746033
             Color: 119; 11; 32
-          Class: autoware_auto_perception_rviz_plugin/DetectedObjects
+          Class: autoware_perception_rviz_plugin/DetectedObjects
           Display Acceleration: true
           Display Existence Probability: false
           Display Label: true
