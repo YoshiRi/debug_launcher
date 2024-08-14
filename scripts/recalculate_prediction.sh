@@ -1,12 +1,13 @@
 #!/bin/bash
 
-# usage ./recalculate_prediction.sh -b <bagfile> -o <offset> -r <rate> --rviz_config <rviz_config>
+# usage ./recalculate_prediction.sh -b <bagfile> -o <offset> -r <rate> --rviz_config <rviz_config> --do-not-run-visualization
 
 # variables
 BAGFILE=""
 OFFSET=0.001
 RATE=0.2
 RVIZ_CONFIG=""
+DO_NOT_RUN_VISUALIZATION=false
 while getopts "b:o:r:-:" opt; do
   case $opt in
     b)
@@ -23,6 +24,9 @@ while getopts "b:o:r:-:" opt; do
         rviz_config)
           RVIZ_CONFIG=$OPTARG
           ;;
+        do-not-run-visualization)
+            DO_NOT_RUN_VISUALIZATION=true
+            ;;
       esac
       ;;
     \?)
@@ -53,24 +57,25 @@ VISUALIZE_COMMAND="ros2 run autoware_debug_tools processing_time_visualizer -t /
 
 # 1. launch autoware first in a new terminal
 gnome-terminal -- bash -c "$SETUP_COMMAND; $LAUNCH_COMMAND;" &
-LAUNCH_PID=$!
-echo "LAUNCH_PID: $LAUNCH_PID"
 
 # 2. play bag file in another new terminal after 5 seconds
 sleep 5
 gnome-terminal -- bash -c "$SETUP_COMMAND; $PLAY_COMMAND;" &
-PLAY_PID=$!
 
 # 3. visualize processing time in another new terminal after 5 seconds
-sleep 5
-$VISUALIZE_COMMAND
-# gnome-terminal -- bash -c "$SETUP_COMMAND; $VISUALIZE_COMMAND; exec bash" &
-# VISUALIZE_PID=$!
+sleep 5 # need to wait until the topic is published
+if [ "$DO_NOT_RUN_VISUALIZATION" = false ]; then
+    $VISUALIZE_COMMAND
+fi
 
-# # 4. wait for the play to finish
-# wait $PLAY_PID
-# echo "Play finished"
+LAUNCH_PID=$(pgrep -f "$LAUNCH_COMMAND")
+echo "LAUNCH_PID: $LAUNCH_PID"
 
-# # 5. cleanup: kill the launch and visualize processes
-# kill $LAUNCH_PID
-# kill $VISUALIZE_PID
+# 4. wait for the play to finish
+while pgrep -f "$PLAY_COMMAND" > /dev/null; do
+    sleep 1
+done
+echo "Play finished"
+
+# 5. kill the launch
+kill $LAUNCH_PID
