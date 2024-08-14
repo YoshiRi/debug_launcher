@@ -6,6 +6,7 @@
   <description>Debug launcher for autoware rosbag replay</description>
   <maintainer email="yoshiyoshidetteiu@gmail.com">yoshiri</maintainer>
   <license>Apache License 2.0</license>
+  <depend>autoware_perception_msgs</depend>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
   <buildtool_depend>autoware_cmake</buildtool_depend>
