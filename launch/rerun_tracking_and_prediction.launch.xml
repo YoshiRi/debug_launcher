@@ -19,7 +19,7 @@
 <arg name="use_tracking_merger" default="false"/>
 
 <!-- config path control-->
-<arg name="use_universe_path" default="true"/>
+<arg name="use_universe_path" default="false"/>
 <arg name="map_based_prediction_config_path" default="$(find-pkg-share autoware_map_based_prediction)/config/" if="$(var use_universe_path)"/>
 <arg name="multi_object_tracker_config_path" default="$(find-pkg-share autoware_multi_object_tracker)/config" if="$(var use_universe_path)"/>
 <arg name="tracking_object_merger_config_path" default="$(find-pkg-share autoware_tracking_object_merger)/config" if="$(var use_universe_path)"/>
