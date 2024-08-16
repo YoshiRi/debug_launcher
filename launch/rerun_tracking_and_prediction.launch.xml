@@ -52,14 +52,14 @@
 </include>
 
 <!--radar long range dynamic object tracking-->
-<include file="$(find-pkg-share autoware_radar_object_tracker)/launch/radar_object_tracker.launch.xml">
+<!-- <include file="$(find-pkg-share autoware_radar_object_tracker)/launch/radar_object_tracker.launch.xml">
     <arg name="publish_rate" value="$(var publish_rate)"/>
     <arg name="enable_delay_compensation" value="$(var enable_delay_compensation)"/>
     <arg name="input" value="$(var radar_tracker_input)"/>
     <arg name="output" value="$(var radar_tracker_output)"/>
     <arg name="data_association_matrix_path" value="$(var radar_object_tracker_config_path)/data_association_matrix.param.yaml"/>
     <arg name="radar_object_tracker_param_path" value="$(var radar_object_tracker_config_path)/radar_object_tracker.param.yaml"/>
-</include>
+</include> -->
 
 <!--tracking object merger to merge near objects and far objects -->
 <group if="$(var use_tracking_merger)">

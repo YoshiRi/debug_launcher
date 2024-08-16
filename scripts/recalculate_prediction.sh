@@ -113,6 +113,7 @@ fi
 # 3. visualize processing time
 VISUALIZE_COMMAND="ros2 run autoware_debug_tools processing_time_visualizer -t /perception/object_recognition/prediction/map_based_prediction/debug/processing_time_detail_ms"
 
+RECORD_COMMAND="ros2 run debug_launcher record_processing_time.py -t /perception/object_recognition/prediction/map_based_prediction/debug/processing_time_ms"
 
 # 4. run the commands
 # 4-1. launch autoware first in a new terminal
@@ -122,6 +123,9 @@ gnome-terminal -- bash -c "$SETUP_COMMAND; $LAUNCH_COMMAND;" & # add exec bash; 
 sleep 5
 gnome-terminal -- bash -c "$SETUP_COMMAND; $PLAY_COMMAND;" &
 
+# 4-2-b. record processing time in another new terminal after 5 seconds
+gnome-terminal -- bash -c "$SETUP_COMMAND; $RECORD_COMMAND; exec bash;" & 
+
 # 4-3. visualize processing time in another new terminal after 5 seconds
 sleep 7 # need to wait until the topic is published
 if [ "$DO_NOT_RUN_VISUALIZATION" = false ]; then
@@ -129,12 +133,13 @@ if [ "$DO_NOT_RUN_VISUALIZATION" = false ]; then
 fi
 
 # 4-4. get the launch pid and wait for the play to finish
-LAUNCH_PID=$(pgrep -f "$LAUNCH_COMMAND")
 while pgrep -f "$BASE_PLAY_COMMAND" > /dev/null; do
     sleep 1
 done
 echo "Play finished. Kill the launch"
-
+LAUNCH_PID=$(pgrep -f "$LAUNCH_COMMAND")
+RECORD_PID=$(pgrep -f "$RECORD_COMMAND")
 
 # 5. kill the launch
-kill $LAUNCH_PID
+kill -s SIGINT $LAUNCH_PID
+kill -s SIGINT $RECORD_PID
