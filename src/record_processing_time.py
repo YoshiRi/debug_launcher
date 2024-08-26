@@ -1,20 +1,23 @@
 #!/usr/bin/env python3
 # usage
 # ros2 run debug_launcher record_processing_time.py --topics /topic1 /topic2
+import argparse
 import csv
+
+import matplotlib.pyplot as plt
 import rclpy
+import rclpy.executors
+import yaml
 from rclpy.node import Node
 from std_srvs.srv import Trigger
 from tier4_debug_msgs.msg import Float64Stamped
-import matplotlib.pyplot as plt
-import argparse
-import yaml
-import rclpy.executors
+
 
 def load_topics_from_yaml(yaml_file):
-    with open(yaml_file, 'r') as file:
+    with open(yaml_file, "r") as file:
         config = yaml.safe_load(file)
-    return config['topics']
+    return config["topics"]
+
 
 class Float64StampedLogger:
     def __init__(self, node: Node, topic_name: str):
@@ -24,10 +27,7 @@ class Float64StampedLogger:
         self.values = []
 
         self.subscription = node.create_subscription(
-            Float64Stamped,
-            topic_name,
-            self.listener_callback,
-            10
+            Float64Stamped, topic_name, self.listener_callback, 10
         )
 
     def listener_callback(self, msg: Float64Stamped):
@@ -35,7 +35,9 @@ class Float64StampedLogger:
         value = msg.data
         self.times.append(timestamp)
         self.values.append(value)
-        self.node.get_logger().info(f'Received on {self.topic_name}: time={timestamp}, value={value}')
+        self.node.get_logger().info(
+            f"Received on {self.topic_name}: time={timestamp}, value={value}"
+        )
 
     def has_values(self):
         return len(self.times) > 0
@@ -47,31 +49,35 @@ class Float64StampedLogger:
     def shutdown(self, save_individual=True):
         if save_individual:
             csv_filename = f'{self.topic_name.replace("/", "_")}_output.csv'
-            with open(csv_filename, mode='w', newline='') as csv_file:
+            with open(csv_filename, mode="w", newline="") as csv_file:
                 csv_writer = csv.writer(csv_file)
-                csv_writer.writerow(['topic', 'time', 'value'])
+                csv_writer.writerow(["topic", "time", "value"])
                 self.save_to_file(csv_writer)
             # self.plot_data()
 
     def plot_data(self):
         plt.figure(figsize=(10, 6))
-        plt.plot(self.times, self.values, marker='o')
-        plt.title(f'{self.topic_name} Data Over Time')
-        plt.xlabel('Time [s]')
-        plt.ylabel('Value')
+        plt.plot(self.times, self.values, marker="o")
+        plt.title(f"{self.topic_name} Data Over Time")
+        plt.xlabel("Time [s]")
+        plt.ylabel("Value")
         plt.grid(True)
-        plt.savefig(f'{self.topic_name.replace("/", "_")}_output_plot.png')  # Save plot as PNG
+        plt.savefig(
+            f'{self.topic_name.replace("/", "_")}_output_plot.png'
+        )  # Save plot as PNG
         plt.show()  # Show plot
 
 
 class MultiTopicLoggerNode(Node):
     def __init__(self, topics: list):
-        super().__init__('multi_topic_logger_node_')
+        super().__init__("multi_topic_logger_node_")
         self.loggers = [Float64StampedLogger(self, topic) for topic in topics]
 
         # Add shutdown service
         self._shutdown_triggered = False
-        self.srv = self.create_service(Trigger, 'shutdown_service', self.shutdown_service_callback)
+        self.srv = self.create_service(
+            Trigger, "shutdown_service", self.shutdown_service_callback
+        )
 
     def shutdown(self, save_individual=True):
         print("Shutting down...")
@@ -83,15 +89,15 @@ class MultiTopicLoggerNode(Node):
         if not has_values:
             print("No data received, exiting without saving")
             return
-        
-        csv_filename = 'all_topics_output.csv'
-        with open(csv_filename, mode='w', newline='') as csv_file:
+
+        csv_filename = "all_topics_output.csv"
+        with open(csv_filename, mode="w", newline="") as csv_file:
             csv_writer = csv.writer(csv_file)
-            csv_writer.writerow(['topic', 'time', 'value'])
+            csv_writer.writerow(["topic", "time", "value"])
             for logger in self.loggers:
                 logger.save_to_file(csv_writer)
                 # logger.shutdown(save_individual)
-        print(f'All data saved to {csv_filename}')
+        print(f"All data saved to {csv_filename}")
 
     def shutdown_service_callback(self, request, response):
         self.get_logger().info("Shutdown service called, preparing to shut down...")
@@ -110,22 +116,26 @@ class MultiTopicLoggerNode(Node):
 def main(args=None):
     parser = argparse.ArgumentParser(description="Multi-Topic Logger")
     parser.add_argument(
-        '-t', '--topics', type=str, nargs='*', help='Specify the list of topics to subscribe to'
+        "-t",
+        "--topics",
+        type=str,
+        nargs="*",
+        help="Specify the list of topics to subscribe to",
     )
     parser.add_argument(
-        '-y', '--yaml', type=str, help='Specify a YAML file with the list of topics'
+        "-y", "--yaml", type=str, help="Specify a YAML file with the list of topics"
     )
     parser.add_argument(
-        '--no-individual', action='store_true', help='Disable individual file saving'
+        "--no-individual", action="store_true", help="Disable individual file saving"
     )
     parsed_args = parser.parse_args(args)
 
-    if (parsed_args.yaml):
+    if parsed_args.yaml:
         topics = load_topics_from_yaml(parsed_args.yaml)
-    elif (parsed_args.topics):
+    elif parsed_args.topics:
         topics = parsed_args.topics
     else:
-        raise ValueError('You must specify topics via --topics or --yaml')
+        raise ValueError("You must specify topics via --topics or --yaml")
 
     rclpy.init(args=args)
     node = MultiTopicLoggerNode(topics=topics)
@@ -146,5 +156,5 @@ def main(args=None):
             rclpy.shutdown()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

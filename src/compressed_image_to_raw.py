@@ -6,17 +6,17 @@ image_transportを使っても下記のように書けますが、QoSがBEST_EFF
 ros2 run image_transport republish --ros-args --remap in:=/sensing/camera/camera0/image_rect_color/compressed --ros-args --remap out:=/sensing/camera/camera0/image_rect_color
 """
 
-import rclpy
-from rclpy.node import Node
-from rclpy.qos import QoSProfile
-from rclpy.qos import ReliabilityPolicy
-from sensor_msgs.msg import CompressedImage, Image
-from cv_bridge import CvBridge, CvBridgeError
 import cv2
+import rclpy
+from cv_bridge import CvBridge, CvBridgeError
+from rclpy.node import Node
+from rclpy.qos import QoSProfile, ReliabilityPolicy
+from sensor_msgs.msg import CompressedImage, Image
+
 
 class ImageRepublisher(Node):
     def __init__(self, input_topics, output_topics):
-        super().__init__('image_republisher')
+        super().__init__("image_republisher")
         self.bridge = CvBridge()
 
         qos = QoSProfile(depth=10)
@@ -31,12 +31,15 @@ class ImageRepublisher(Node):
             self.pubs.append(publisher)
 
             subscriber = self.create_subscription(
-            CompressedImage,
-            in_topic,
-            lambda msg, pub=publisher: self.listener_callback(msg, pub),  # publisherオブジェクトを渡す
-            qos)
+                CompressedImage,
+                in_topic,
+                lambda msg, pub=publisher: self.listener_callback(
+                    msg, pub
+                ),  # publisherオブジェクトを渡す
+                qos,
+            )
             self.subs.append(subscriber)
-            
+
     def listener_callback(self, msg, publisher):
         try:
             # 圧縮画像をOpenCV形式に変換
@@ -47,16 +50,29 @@ class ImageRepublisher(Node):
             # 生の画像メッセージをパブリッシュ
             publisher.publish(raw_msg)
         except CvBridgeError as e:
-            self.get_logger().error('CvBridge Error: {}'.format(e))
+            self.get_logger().error("CvBridge Error: {}".format(e))
+
 
 def main(args=None):
     rclpy.init(args=args)
-    
+
     # input_topics and output_topics
-    input_topics = ['/sensing/camera/camera0/image_rect_color/compressed', '/sensing/camera/camera1/image_rect_color/compressed', '/sensing/camera/camera2/image_rect_color/compressed', '/sensing/camera/camera3/image_rect_color/compressed',
-                    '/sensing/camera/camera4/image_rect_color/compressed', '/sensing/camera/camera5/image_rect_color/compressed']
-    output_topics = ['/sensing/camera/camera0/image_rect_color', '/sensing/camera/camera1/image_rect_color', '/sensing/camera/camera2/image_rect_color', '/sensing/camera/camera3/image_rect_color',
-                    '/sensing/camera/camera4/image_rect_color', '/sensing/camera/camera5/image_rect_color']
+    input_topics = [
+        "/sensing/camera/camera0/image_rect_color/compressed",
+        "/sensing/camera/camera1/image_rect_color/compressed",
+        "/sensing/camera/camera2/image_rect_color/compressed",
+        "/sensing/camera/camera3/image_rect_color/compressed",
+        "/sensing/camera/camera4/image_rect_color/compressed",
+        "/sensing/camera/camera5/image_rect_color/compressed",
+    ]
+    output_topics = [
+        "/sensing/camera/camera0/image_rect_color",
+        "/sensing/camera/camera1/image_rect_color",
+        "/sensing/camera/camera2/image_rect_color",
+        "/sensing/camera/camera3/image_rect_color",
+        "/sensing/camera/camera4/image_rect_color",
+        "/sensing/camera/camera5/image_rect_color",
+    ]
 
     image_republisher = ImageRepublisher(input_topics, output_topics)
 
@@ -65,5 +81,6 @@ def main(args=None):
     image_republisher.destroy_node()
     rclpy.shutdown()
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()
