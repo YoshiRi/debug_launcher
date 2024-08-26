@@ -65,6 +65,8 @@ ros2 run debug_launcher play_bag_before_tracking.sh -b <rosbag> -o <offset>
 
 ## scripts
 
+For general assumptions, map files are considered to be located in `$(env HOME)/autoware_map/$(var map_name)`.
+
 ### `play_bag_without_perception.sh`
 
 This script plays rosbag witt perception topics remapped.
@@ -83,3 +85,25 @@ Usage:
 ```bash
 ros2 run debug_launcher play_bag_before_tracking.sh -b <rosbag> -o <offset>
 ```
+
+
+<!-- ros2 run debug_launcher recalculate_prediction.sh -b $HOME/autoware_bag/SPkadai/perf/xx1p1/converted/ --map large_scale_odaiba_beta --run-tracking -r 2.5 -->
+## `recalculate_prediction.sh`
+
+This script runs tracking and prediction based on existing rosbag detection messages.
+This will open three terminals and run `ros2 bag play`, `main launcher`, and `processing time recorder` and create `all_processing_time.csv` file to save results.
+
+Usage:
+```bash
+ros2 run debug_launcher recalculate_prediction.sh -b <rosbag> -m <map_name> -r <replay rate>
+```
+
+main options:
+| arg | description |
+| --- | --- |
+| -b | path to rosbag file. |
+| -m | name of map file. If you set this, the launcher will look for `$(env HOME)/autoware_map/$(var map_name)`.|
+| -r | replay rate. |
+| -o | offset. |
+| --run-tracking | if set, run tracking either. |
+| --rviz_config | path to rviz config file. default rviz config path is `$(this package)/rviz/debug.rviz`. |

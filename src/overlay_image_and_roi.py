@@ -7,7 +7,7 @@ import datetime
 import threading
 from datetime import datetime as dt
 from functools import partial
-from typing import Dict, Tuple, List
+from typing import Dict, List, Tuple
 
 import cv2
 import numpy as np
@@ -29,7 +29,8 @@ LABEL_COLOR_MAP = {
     7: (0, 226, 0),  # PEDESTRIAN - Green
 }
 
-def draw_title_image(img:np.array, title:str):
+
+def draw_title_image(img: np.array, title: str):
     img = cv2.putText(
         img,
         title,
@@ -40,6 +41,7 @@ def draw_title_image(img:np.array, title:str):
         2,
         cv2.LINE_AA,
     )
+
 
 def is_valid_bbox(bbox):
     # calc area
@@ -78,17 +80,26 @@ def fit_bbox_to_image(img_shape, bbox) -> bool:
 
 # 単一画像にタイトルを描画する関数
 def draw_title_image(img: np.array, title: str) -> None:
-    cv2.putText(img, title, (10, 100), cv2.FONT_HERSHEY_PLAIN, 6, (255, 0, 0), 2, cv2.LINE_AA)
+    cv2.putText(
+        img, title, (10, 100), cv2.FONT_HERSHEY_PLAIN, 6, (255, 0, 0), 2, cv2.LINE_AA
+    )
+
 
 # バウンディングボックスが有効か判定する関数
 def is_valid_bbox(bbox) -> bool:
     area = bbox.width * bbox.height
     return area > 0
 
+
 # バウンディングボックスを画像の範囲に収める関数
 def fit_bbox_to_image(img_shape: Tuple[int, int, int], bbox) -> bool:
     img_height, img_width, _ = img_shape
-    x_offset, y_offset, width, height = bbox.x_offset, bbox.y_offset, bbox.width, bbox.height
+    x_offset, y_offset, width, height = (
+        bbox.x_offset,
+        bbox.y_offset,
+        bbox.width,
+        bbox.height,
+    )
 
     # bbox outside of image
     if x_offset > img_width or y_offset > img_height:
@@ -105,15 +116,28 @@ def fit_bbox_to_image(img_shape: Tuple[int, int, int], bbox) -> bool:
 
     return True
 
+
 # 画像上にROIを描画する関数
-def process_image_and_rois(image: np.array, rois: List, color_map: Dict[int, Tuple[int, int, int]], show_title: bool, title: str = "") -> np.array:
+def process_image_and_rois(
+    image: np.array,
+    rois: List,
+    color_map: Dict[int, Tuple[int, int, int]],
+    show_title: bool,
+    title: str = "",
+) -> np.array:
     img_shape = image.shape
     for roi in rois:
         bbox = roi.feature.roi
         cls = roi.object.classification[0].label
         color = color_map.get(cls, (255, 255, 255))  # Use white as default color
         if fit_bbox_to_image(img_shape, bbox) and is_valid_bbox(bbox):
-            cv2.rectangle(image, (bbox.x_offset, bbox.y_offset), (bbox.x_offset + bbox.width, bbox.y_offset + bbox.height), color=color, thickness=3)
+            cv2.rectangle(
+                image,
+                (bbox.x_offset, bbox.y_offset),
+                (bbox.x_offset + bbox.width, bbox.y_offset + bbox.height),
+                color=color,
+                thickness=3,
+            )
     if show_title:
         draw_title_image(image, title)
     return image
@@ -145,7 +169,9 @@ class ImgViewer(Node):
         )
         self.image_topics = self.get_parameter("image_topics").value
         self.rois_topics = self.get_parameter("rois_topics").value
-        assert len(self.image_topics) == len(self.rois_topics), "image_topics and rois_topics must have the same length"
+        assert len(self.image_topics) == len(
+            self.rois_topics
+        ), "image_topics and rois_topics must have the same length"
         # logger
         self.get_logger().info(f"image_topics: {self.image_topics}")
         self.get_logger().info(f"rois_topics: {self.rois_topics}")
@@ -179,11 +205,13 @@ class ImgViewer(Node):
                 qos_profile,
             )
             if publish_topic:
-                self.img_publishers[i] = self.create_publisher(Image, f"{rename_keyward}{i}/image_with_roi", qos_profile)
+                self.img_publishers[i] = self.create_publisher(
+                    Image, f"{rename_keyward}{i}/image_with_roi", qos_profile
+                )
 
         # # init publisher
-        # self.img_publishers = {i: self.create_publisher(image_msg, f"{rename_keyward}{i}/image_with_roi", qos_profile) for i in range(num_image)} 
-        
+        # self.img_publishers = {i: self.create_publisher(image_msg, f"{rename_keyward}{i}/image_with_roi", qos_profile) for i in range(num_image)}
+
         self.images = {i: None for i in range(num_image)}
         self.rois = {i: None for i in range(num_image)}
         self.image_stamps = {i: None for i in range(num_image)}
@@ -236,7 +264,7 @@ class ImgViewer(Node):
 
             if len(self.rois_stamp_buff[image_id]) < 2:
                 return
-            
+
             if image_id == 1 and self.is_synced(self.rois_stamp_buff[image_id][-2]):
                 # print(f"draw image. timestamp: {self.rois_stamps[image_id]}")
                 self.show_image()
@@ -284,11 +312,16 @@ class ImgViewer(Node):
 
         # process images to show
         for i in range(num_image):
-            process_image_and_rois(self.images[i], self.rois[i], self.color_map, self.show_title, "")
+            process_image_and_rois(
+                self.images[i], self.rois[i], self.color_map, self.show_title, ""
+            )
             if self.img_publishers[i] is not None:
                 msg = Image()
                 stamp_sec: float = self.rois_stamps[i]
-                msg.header.stamp = rclpy.time.Time(seconds=int(stamp_sec), nanoseconds=int((stamp_sec - int(stamp_sec)) * 1e9)).to_msg()
+                msg.header.stamp = rclpy.time.Time(
+                    seconds=int(stamp_sec),
+                    nanoseconds=int((stamp_sec - int(stamp_sec)) * 1e9),
+                ).to_msg()
                 msg.height = self.images[i].shape[0]
                 msg.width = self.images[i].shape[1]
                 msg.encoding = "bgr8"
@@ -357,8 +390,14 @@ def main(args=None):
 
     # print("in_image", args.in_image)
     # print("rois_topic", args.rois_topic)
-    input_images = ['/sensing/camera/camera0/image_rect_color/compressed', '/sensing/camera/camera0/image_rect_color/compressed']
-    input_rois = ['/perception/object_recognition/detection/rois0', '/perception/object_recognition/detection/tracked/rois0']
+    input_images = [
+        "/sensing/camera/camera0/image_rect_color/compressed",
+        "/sensing/camera/camera0/image_rect_color/compressed",
+    ]
+    input_rois = [
+        "/perception/object_recognition/detection/rois0",
+        "/perception/object_recognition/detection/tracked/rois0",
+    ]
 
     node = ImgViewer(
         input_images,
