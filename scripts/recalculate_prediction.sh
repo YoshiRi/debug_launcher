@@ -124,7 +124,7 @@ sleep 5
 gnome-terminal -- bash -c "$SETUP_COMMAND; $PLAY_COMMAND;" &
 
 # 4-2-b. record processing time in another new terminal after 5 seconds
-gnome-terminal -- bash -c "$SETUP_COMMAND; $RECORD_COMMAND; exec bash;" & 
+gnome-terminal -- bash -c "$SETUP_COMMAND; $RECORD_COMMAND;" & 
 
 # 4-3. visualize processing time in another new terminal after 5 seconds
 sleep 7 # need to wait until the topic is published
@@ -138,8 +138,7 @@ while pgrep -f "$BASE_PLAY_COMMAND" > /dev/null; do
 done
 echo "Play finished. Kill the launch"
 LAUNCH_PID=$(pgrep -f "$LAUNCH_COMMAND")
-RECORD_PID=$(pgrep -f "$RECORD_COMMAND")
 
 # 5. kill the launch
 kill -s SIGINT $LAUNCH_PID
-kill -s SIGINT $RECORD_PID
+ros2 service call /shutdown_service std_srvs/srv/Trigger "{}" # shutdown the reording node via service call

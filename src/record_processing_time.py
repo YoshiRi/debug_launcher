@@ -1,15 +1,20 @@
 #!/usr/bin/env python3
-# # usage
+# usage
 # ros2 run debug_launcher record_processing_time.py --topics /topic1 /topic2
 import csv
-import os
-import signal
 import rclpy
 from rclpy.node import Node
+from std_srvs.srv import Trigger
 from tier4_debug_msgs.msg import Float64Stamped
 import matplotlib.pyplot as plt
 import argparse
 import yaml
+import rclpy.executors
+
+def load_topics_from_yaml(yaml_file):
+    with open(yaml_file, 'r') as file:
+        config = yaml.safe_load(file)
+    return config['topics']
 
 class Float64StampedLogger:
     def __init__(self, node: Node, topic_name: str):
@@ -31,6 +36,9 @@ class Float64StampedLogger:
         self.times.append(timestamp)
         self.values.append(value)
         self.node.get_logger().info(f'Received on {self.topic_name}: time={timestamp}, value={value}')
+
+    def has_values(self):
+        return len(self.times) > 0
 
     def save_to_file(self, csv_writer):
         for time, value in zip(self.times, self.values):
@@ -58,25 +66,45 @@ class Float64StampedLogger:
 
 class MultiTopicLoggerNode(Node):
     def __init__(self, topics: list):
-        super().__init__('multi_topic_logger_node')
+        super().__init__('multi_topic_logger_node_')
         self.loggers = [Float64StampedLogger(self, topic) for topic in topics]
 
+        # Add shutdown service
+        self._shutdown_triggered = False
+        self.srv = self.create_service(Trigger, 'shutdown_service', self.shutdown_service_callback)
+
     def shutdown(self, save_individual=True):
+        print("Shutting down...")
+        has_values = False
+        for logger in self.loggers:
+            if logger.has_values():
+                has_values = True
+                break
+        if not has_values:
+            print("No data received, exiting without saving")
+            return
+        
         csv_filename = 'all_topics_output.csv'
         with open(csv_filename, mode='w', newline='') as csv_file:
             csv_writer = csv.writer(csv_file)
             csv_writer.writerow(['topic', 'time', 'value'])
             for logger in self.loggers:
                 logger.save_to_file(csv_writer)
-                logger.shutdown(save_individual)
+                # logger.shutdown(save_individual)
+        print(f'All data saved to {csv_filename}')
 
-    def __del__(self):
-        self.shutdown()
+    def shutdown_service_callback(self, request, response):
+        self.get_logger().info("Shutdown service called, preparing to shut down...")
+        self._shutdown_triggered = True
+        response.success = True
+        response.message = "Node will shut down shortly"
+        return response
 
-def load_topics_from_yaml(yaml_file):
-    with open(yaml_file, 'r') as file:
-        config = yaml.safe_load(file)
-    return config['topics']
+    def check_shutdown(self):
+        if self._shutdown_triggered:
+            self.get_logger().info("Shutting down node...")
+            self.shutdown(save_individual=True)
+            rclpy.shutdown()
 
 
 def main(args=None):
@@ -100,16 +128,22 @@ def main(args=None):
         raise ValueError('You must specify topics via --topics or --yaml')
 
     rclpy.init(args=args)
-    node = MultiTopicLoggerNode(topics)
+    node = MultiTopicLoggerNode(topics=topics)
     try:
-        rclpy.spin(node)
+        while rclpy.ok():
+            rclpy.spin_once(node)
+            node.check_shutdown()
     except (KeyboardInterrupt, rclpy.executors.ExternalShutdownException):
         node.get_logger().info("Shutdown initiated by KeyboardInterrupt.")
-        # Ensure node shutdown logic is executed
-        node.shutdown(save_individual=not parsed_args.no_individual)
-        # Safely shutdown ROS context
-        rclpy.shutdown()
-
+        node.shutdown(save_individual=True)
+    except Exception as e:
+        node.get_logger().error(f"An unexpected exception occurred: {e}")
+        node.shutdown(save_individual=True)
+    finally:
+        if node:
+            node.destroy_node()
+        if rclpy.ok():
+            rclpy.shutdown()
 
 
 if __name__ == '__main__':
