@@ -12,8 +12,8 @@
 <arg name="lanelet2_map_file" default="lanelet2_map.osm" description="vector map path"/>
 
 <!-- rviz args -->
-<arg name="rviz_config_path" default="$(env HOME)/debug_radar_tracker.rviz"/>
-<!-- <arg name="rviz_config_path" default="$(find-pkg-share debug_launcher)/rviz/debug.rviz"/> -->
+<!-- <arg name="rviz_config_path" default="$(env HOME)/debug_radar_tracker.rviz"/> -->
+<arg name="rviz_config_path" default="$(find-pkg-share debug_launcher)/rviz/debug.rviz"/>
 
 <!-- launch map -->
 <include file="$(find-pkg-share autoware_launch)/launch/components/tier4_map_component.launch.xml"/>
