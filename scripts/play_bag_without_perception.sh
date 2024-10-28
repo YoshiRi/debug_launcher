@@ -11,6 +11,7 @@ AUTOWARE_PATH=$HOME/autoware
 SKIP_TOPICS=(
      "/sensing/radar/*" # keep this if you want radar objects to be remained
      "/perception/object_recognition/detection/rois*"
+    #  "/perception/object_recognition/detection/centerpoint*"
     #  "/sensing/lidar/*/pandar_packets"
 )
 

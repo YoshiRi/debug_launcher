@@ -78,3 +78,4 @@ else
 fi
 
 ros2 bag play "$BAG_NAME" $COMMAND_OPTION -r $RATE --clock 200  --start-offset $OFFSET
+# ros2 bag play "$BAG_NAME" $COMMAND_OPTION -r $RATE  --start-offset $OFFSET

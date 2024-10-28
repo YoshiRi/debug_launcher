@@ -12,14 +12,14 @@
 <!-- <arg name="rviz_config_path" default="$(find-pkg-share debug_launcher)/rviz/debug.rviz"/> -->
 <!-- args -->
 <arg name="publish_rate" default="10.0"/>
-<arg name="radar_tracker_input" default="/perception/object_recognition/radar/far_objects"/>
+<arg name="radar_tracker_input" default="/perception/object_recognition/detection/radar/far_objects"/>
 <arg name="radar_tracker_output" default="/perception/object_recognition/tracking/far_objects"/>
 <arg name="enable_delay_compensation" default="false"/>
 <arg name="run_prediction" default="true"/>
 <arg name="use_tracking_merger" default="false"/>
 
 <!-- config path control-->
-<arg name="use_universe_path" default="true"/>
+<arg name="use_universe_path" default="false"/>
 <arg name="map_based_prediction_config_path" default="$(find-pkg-share map_based_prediction)/config/" if="$(var use_universe_path)"/>
 <arg name="multi_object_tracker_config_path" default="$(find-pkg-share multi_object_tracker)/config" if="$(var use_universe_path)"/>
 <arg name="tracking_object_merger_config_path" default="$(find-pkg-share tracking_object_merger)/config" if="$(var use_universe_path)"/>
