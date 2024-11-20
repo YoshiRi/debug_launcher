@@ -57,22 +57,13 @@ def main(args=None):
     rclpy.init(args=args)
 
     # input_topics and output_topics
-    input_topics = [
-        "/sensing/camera/camera0/image_rect_color/compressed",
-        "/sensing/camera/camera1/image_rect_color/compressed",
-        "/sensing/camera/camera2/image_rect_color/compressed",
-        "/sensing/camera/camera3/image_rect_color/compressed",
-        "/sensing/camera/camera4/image_rect_color/compressed",
-        "/sensing/camera/camera5/image_rect_color/compressed",
-    ]
-    output_topics = [
-        "/sensing/camera/camera0/image_rect_color",
-        "/sensing/camera/camera1/image_rect_color",
-        "/sensing/camera/camera2/image_rect_color",
-        "/sensing/camera/camera3/image_rect_color",
-        "/sensing/camera/camera4/image_rect_color",
-        "/sensing/camera/camera5/image_rect_color",
-    ]
+    input_topics = []
+    output_topics = []
+    camera_num = 6
+    image_name = "image_rect_color" # may use "image_raw"
+    for i in range(camera_num):
+        input_topics.append(f"/sensing/camera/camera{i}/{image_name}/compressed")
+        output_topics.append(f"/sensing/camera/camera{i}/{image_name}")
 
     image_republisher = ImageRepublisher(input_topics, output_topics)
 
